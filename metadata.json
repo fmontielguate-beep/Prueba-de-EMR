@@ -1,0 +1,5 @@
+{
+  "name": "PediaCare EMR",
+  "description": "Sistema de Expediente Médico Electrónico Pediátrico con integración de IA para método de Weed (SOAP), control de vacunas y seguimiento de hitos del desarrollo.",
+  "requestFramePermissions": []
+}
