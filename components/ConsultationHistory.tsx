@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Consultation, Patient, LabCategory } from '../types';
-import { Search, FileText, ChevronDown, ChevronUp, History, AlertOctagon, Sparkles, Calendar, User, FlaskConical, Microscope } from 'lucide-react';
+import { Search, FileText, ChevronDown, ChevronUp, History, AlertOctagon, Sparkles, Calendar, User, FlaskConical } from 'lucide-react';
 
 interface Props {
   consultations: Consultation[];

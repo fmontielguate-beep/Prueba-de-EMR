@@ -8,7 +8,7 @@ import ConsultationHistory from './components/ConsultationHistory';
 import PatientList from './components/PatientList';
 import DosageCalculator from './components/DosageCalculator';
 import { Patient, SoapNote, Consultation, VitalSigns, LabResult } from './types';
-import { Activity, ClipboardList, UserPlus, ChevronRight, Check, ArrowLeft, Calculator, User, Home, History, X, Clock, FileText, Users, FileUser, Baby, Stethoscope, Undo2, Lock, ShieldAlert, KeyRound, FlaskConical, Database, ShieldCheck, LogOut } from 'lucide-react';
+import { Activity, ArrowLeft, Calculator, History, X, Clock, FileText, Users, Baby, Stethoscope, Undo2, Lock, ShieldAlert, KeyRound, FlaskConical, Database, ShieldCheck, LogOut } from 'lucide-react';
 
 // Helpers
 const calculateAge = (dobString: string): string => {
@@ -303,7 +303,7 @@ function App() {
             }`}
             disabled={view === 'list'}
           >
-            <FileUser className="w-5 h-5" />
+            <FileText className="w-5 h-5" />
             <span className="text-[10px] font-medium">Datos</span>
           </button>
           <button 

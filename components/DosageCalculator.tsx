@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calculator, X, Pill, ArrowRight, Syringe } from 'lucide-react';
+import { Calculator, X, Pill, Syringe } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;

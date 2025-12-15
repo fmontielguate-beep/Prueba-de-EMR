@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Patient, Consultation } from '../types';
-import { Search, UserPlus, Users, ChevronRight, User, Trash2, AlertTriangle, Download, Upload, HardDrive, FileJson } from 'lucide-react';
+import { Search, UserPlus, Users, ChevronRight, User, Trash2, AlertTriangle, Download, Upload } from 'lucide-react';
 
 interface Props {
   patients: Patient[];

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { SoapNote, Patient, VitalSigns, LabResult, LabCategory } from '../types';
 import { Stethoscope, Sparkles, Save, Loader2, Activity, Scale, Ruler, Thermometer, HeartPulse, Calculator, FlaskConical, Plus, Trash2, FileText, Microscope } from 'lucide-react';
 import { analyzeSoapNote } from '../services/geminiService';

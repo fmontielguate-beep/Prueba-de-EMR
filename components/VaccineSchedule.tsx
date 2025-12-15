@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { VACCINES_AAP } from '../constants';
 import { Patient, OtherVaccine } from '../types';
-import { Syringe, AlertTriangle, Plus, Trash2, CalendarCheck, ShieldCheck, CalendarClock, ChevronDown, ChevronUp, CheckCircle2, X } from 'lucide-react';
+import { Syringe, AlertTriangle, Plus, Trash2, CalendarCheck, ShieldCheck, CalendarClock, ChevronDown, ChevronUp, CheckCircle2 } from 'lucide-react';
 
 interface Props {
   patient: Patient;
@@ -303,7 +303,7 @@ const VaccineSchedule: React.FC<Props> = ({ patient, onChange }) => {
                     <div className="flex items-start gap-3 overflow-x-auto py-2 px-1">
                       {vaccines.map((vaccine) => {
                         const appliedDate = patient.vaccines[vaccine.id] || '';
-                        const { status, label } = getVaccineStatus(vaccine);
+                        const { status } = getVaccineStatus(vaccine);
                         
                         return (
                           <div key={vaccine.id} className="flex flex-col gap-1.5 w-[140px] shrink-0 group/item">

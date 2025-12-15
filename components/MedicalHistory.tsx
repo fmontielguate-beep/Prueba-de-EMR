@@ -1,6 +1,6 @@
 import React from 'react';
 import { Patient, MedicalHistory } from '../types';
-import { FileHeart, Baby, AlertCircle, Users } from 'lucide-react';
+import { Baby, AlertCircle, Users } from 'lucide-react';
 
 interface Props {
   data: Patient;
