@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import PatientForm from './components/PatientForm';
 import MedicalHistoryForm from './components/MedicalHistory';
@@ -7,8 +8,9 @@ import WeedConsultation from './components/WeedConsultation';
 import ConsultationHistory from './components/ConsultationHistory';
 import PatientList from './components/PatientList';
 import DosageCalculator from './components/DosageCalculator';
+import PediatricChatbot from './components/PediatricChatbot';
 import { Patient, SoapNote, Consultation, VitalSigns, LabResult } from './types';
-import { Activity, ArrowLeft, Calculator, History, X, Clock, FileText, Users, Baby, Stethoscope, Undo2, Lock, ShieldAlert, KeyRound, FlaskConical, Database, ShieldCheck, LogOut } from 'lucide-react';
+import { Activity, ArrowLeft, Calculator, History, X, FileText, Users, Baby, Stethoscope, Undo2, Lock, ShieldAlert, KeyRound, FlaskConical, Database, ShieldCheck, LogOut, ClipboardList, Sparkles } from 'lucide-react';
 
 // Helpers
 const calculateAge = (dobString: string): string => {
@@ -196,10 +198,9 @@ function App() {
     alert('Respaldo restaurado exitosamente. Se han cargado los expedientes y consultas.');
   };
 
-  const recentHistory = consultations
+  const allPatientConsultations = consultations
     .filter(c => c.patientId === activePatient.id)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 3);
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   const renderStep = () => {
     switch (currentStep) {
@@ -230,7 +231,7 @@ function App() {
                  className="flex items-center gap-2 bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg shadow-sm hover:bg-slate-50 hover:text-blue-600 transition-colors font-medium text-sm"
                >
                  <History className="w-4 h-4" />
-                 Ver Historial Clínico ({consultations.filter(c => c.patientId === activePatient.id).length})
+                 Ver Detalle Histórico ({allPatientConsultations.length})
                </button>
             </div>
             <div className="w-full">
@@ -270,7 +271,7 @@ function App() {
                    </div>
                    <div className="flex-1 overflow-y-auto p-6 bg-slate-50/30">
                      <ConsultationHistory 
-                        consultations={consultations.filter(c => c.patientId === activePatient.id)} 
+                        consultations={allPatientConsultations} 
                         patient={activePatient}
                      />
                    </div>
@@ -508,6 +509,8 @@ function App() {
         >
           <Calculator className="w-6 h-6" />
         </button>
+
+        <PediatricChatbot />
       </>
     );
   }
@@ -590,31 +593,68 @@ function App() {
       {/* Main Content */}
       <main className="max-w-[95rem] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        {view === 'detail' && recentHistory.length > 0 && (
-          <div className="mb-8 animate-in slide-in-from-top-4 duration-500">
+        {/* NEW CLINICAL SUMMARY TABLE */}
+        {view === 'detail' && allPatientConsultations.length > 0 && (
+          <div className="mb-10 animate-in slide-in-from-top-4 duration-500">
              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-               <Clock className="w-3.5 h-3.5" /> Recientes
+               <ClipboardList className="w-4 h-4 text-blue-600" /> Resumen de Evolución Clínica
              </h3>
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-               {recentHistory.map((c) => (
-                 <div key={c.id} className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-lg p-4 shadow-sm hover:border-blue-300 transition-colors flex flex-col gap-2">
-                    <div className="flex justify-between items-start">
-                       <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-                         {new Date(c.date).toLocaleDateString()}
-                       </span>
-                       {c.aiAnalysis && <span className="text-[10px] text-indigo-600 font-bold">IA</span>}
-                    </div>
-                    <div>
-                      <p className="font-bold text-slate-800 text-sm line-clamp-1" title={c.soap.assessment}>
-                        {c.soap.assessment || "Sin diagnóstico"}
-                      </p>
-                      <p className="text-xs text-slate-500 line-clamp-2 mt-1" title={c.soap.plan}>
-                        <FileText className="w-3 h-3 inline mr-1 text-slate-400" />
-                        {c.soap.plan || "Sin plan"}
-                      </p>
-                    </div>
-                 </div>
-               ))}
+             <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div className="overflow-x-auto">
+                   <table className="w-full text-left border-collapse">
+                      <thead className="bg-slate-50 border-b border-slate-200">
+                        <tr>
+                          <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest w-28">Fecha</th>
+                          <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest w-24">Edad</th>
+                          <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Diagnóstico (Análisis)</th>
+                          <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tratamiento (Plan)</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {allPatientConsultations.slice(0, 5).map((c) => (
+                          <tr key={c.id} className="hover:bg-blue-50/30 transition-colors group">
+                             <td className="px-4 py-3 align-top">
+                                <div className="flex flex-col">
+                                   <span className="text-xs font-bold text-slate-800">
+                                      {new Date(c.date).toLocaleDateString()}
+                                   </span>
+                                   {c.aiAnalysis && (
+                                     <span className="flex items-center gap-1 text-[9px] text-indigo-600 font-bold mt-1">
+                                       <Sparkles className="w-2.5 h-2.5" /> IA
+                                     </span>
+                                   )}
+                                </div>
+                             </td>
+                             <td className="px-4 py-3 align-top">
+                                <span className="text-[10px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                                   {c.patientAge || 'N/A'}
+                                </span>
+                             </td>
+                             <td className="px-4 py-3 align-top">
+                                <p className="text-xs font-bold text-slate-800 line-clamp-2 leading-relaxed">
+                                   {c.soap.assessment || "Sin diagnóstico"}
+                                </p>
+                             </td>
+                             <td className="px-4 py-3 align-top">
+                                <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed italic">
+                                   {c.soap.plan || "Sin plan registrado"}
+                                </p>
+                             </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                   </table>
+                </div>
+                {allPatientConsultations.length > 5 && (
+                  <div className="bg-slate-50 px-4 py-2 border-t border-slate-100 text-center">
+                     <button 
+                       onClick={() => { setCurrentStep(3); setShowHistoryPanel(true); }}
+                       className="text-[10px] font-bold text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1 mx-auto"
+                     >
+                        VER HISTORIAL COMPLETO ({allPatientConsultations.length} visitas)
+                     </button>
+                  </div>
+                )}
              </div>
           </div>
         )}
@@ -661,6 +701,8 @@ function App() {
       >
         <Calculator className="w-5 h-5" />
       </button>
+
+      <PediatricChatbot />
     </div>
   );
 }
