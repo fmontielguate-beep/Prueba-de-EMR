@@ -11,7 +11,7 @@ import DosageCalculator from './components/DosageCalculator';
 import PediatricChatbot from './components/PediatricChatbot';
 import GrowthHistory from './components/GrowthHistory';
 import { Patient, SoapNote, Consultation, VitalSigns, LabResult } from './types';
-import { Activity, ArrowLeft, History, X, FileText, Users, Baby, Stethoscope, ShieldAlert, Unlock, ShieldCheck, LogOut, ClipboardList, Sparkles, TrendingUp, Trash2, Pill, HeartPulse, ShieldHalf } from 'lucide-react';
+import { Activity, ArrowLeft, History, X, FileText, Users, Baby, Stethoscope, ShieldAlert, Unlock, ShieldCheck, LogOut, ClipboardList, Sparkles, TrendingUp, Trash2, Pill, HeartPulse, ShieldHalf, ChevronRight, Info } from 'lucide-react';
 
 // Helpers
 const calculateAge = (dobString: string): string => {
@@ -45,6 +45,8 @@ const emptyPatient: Patient = {
   vaccines: {}, otherVaccines: [], milestones: {},
 };
 
+const VERSION = "v2.4.0-pro";
+
 function App() {
   const [accessStep, setAccessStep] = useState<'selection' | 'login' | 'app'>('selection');
   const [passwordInput, setPasswordInput] = useState('');
@@ -60,11 +62,20 @@ function App() {
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (passwordInput === 'Helena 2016') { setAccessStep('app'); setAuthError(false); } 
-    else { setAuthError(true); }
+    if (passwordInput === 'Helena 2016') { 
+      setAccessStep('app'); 
+      setAuthError(false); 
+    } else { 
+      setAuthError(true); 
+    }
   };
 
-  const handleLogout = () => { setAccessStep('selection'); setView('list'); setActivePatient(emptyPatient); setPasswordInput(''); };
+  const handleLogout = () => { 
+    setAccessStep('selection'); 
+    setView('list'); 
+    setActivePatient(emptyPatient); 
+    setPasswordInput(''); 
+  };
 
   const handleNewPatient = () => {
     setActivePatient({ ...emptyPatient, id: generateId() });
@@ -79,7 +90,9 @@ function App() {
 
   const handleDeleteConsultation = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    if (window.confirm("¿Eliminar registro?")) setConsultations(prev => prev.filter(c => c.id !== id));
+    if (window.confirm("¿Eliminar este registro de consulta?")) {
+      setConsultations(prev => prev.filter(c => c.id !== id));
+    }
   };
 
   const handleSaveConsultation = (note: SoapNote, vitals: VitalSigns, labs: LabResult[], aiAnalysis?: string) => {
@@ -88,7 +101,7 @@ function App() {
       patientAge: calculateAge(activePatient.dob), soap: note, vitalSigns: vitals, labResults: labs, aiAnalysis
     };
     setConsultations(prev => [newConsultation, ...prev]);
-    alert("Guardado.");
+    alert("Consulta guardada exitosamente.");
     setShowHistoryPanel(false);
   };
 
@@ -103,16 +116,25 @@ function App() {
       case 3: return (
         <div className="pb-20 max-w-[95rem] mx-auto relative">
           <div className="flex justify-end gap-3 mb-4">
-             <button onClick={() => setShowGrowthHistory(true)} className="flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 px-4 py-2 rounded-lg text-sm font-bold"><TrendingUp className="w-4 h-4" /> Antropometría</button>
-             <button onClick={() => setShowHistoryPanel(true)} className="flex items-center gap-2 bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium"><History className="w-4 h-4" /> Historial ({allPatientConsultations.length})</button>
+             <button onClick={() => setShowGrowthHistory(true)} className="flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-blue-100 transition-all">
+               <TrendingUp className="w-4 h-4" /> Antropometría
+             </button>
+             <button onClick={() => setShowHistoryPanel(true)} className="flex items-center gap-2 bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium shadow-sm hover:bg-slate-50 transition-all">
+               <History className="w-4 h-4" /> Historial Completo ({allPatientConsultations.length})
+             </button>
           </div>
           <WeedConsultation patient={activePatient} onSave={handleSaveConsultation} />
           {showHistoryPanel && (
-            <div className="fixed inset-0 z-50 flex justify-end">
-              <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setShowHistoryPanel(false)} />
-              <div className="relative w-full max-w-2xl bg-white shadow-2xl flex flex-col">
-                 <div className="p-4 border-b flex justify-between items-center bg-slate-50"><h2 className="font-bold flex items-center gap-2"><History className="text-blue-600" /> Historial Clínico</h2><button onClick={() => setShowHistoryPanel(false)}><X /></button></div>
-                 <div className="flex-1 overflow-y-auto p-4"><ConsultationHistory consultations={allPatientConsultations} patient={activePatient} onDelete={handleDeleteConsultation} /></div>
+            <div className="fixed inset-0 z-[100] flex justify-end">
+              <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md animate-in fade-in" onClick={() => setShowHistoryPanel(false)} />
+              <div className="relative w-full max-w-2xl bg-white shadow-2xl flex flex-col h-full animate-in slide-in-from-right duration-300">
+                 <div className="p-6 border-b flex justify-between items-center bg-slate-50">
+                    <h2 className="text-xl font-bold flex items-center gap-2 text-slate-800"><History className="text-blue-600" /> Detalle de Evolución</h2>
+                    <button onClick={() => setShowHistoryPanel(false)} className="p-2 hover:bg-slate-200 rounded-full transition-colors"><X className="w-6 h-6" /></button>
+                 </div>
+                 <div className="flex-1 overflow-y-auto p-6 bg-slate-50/50">
+                    <ConsultationHistory consultations={allPatientConsultations} patient={activePatient} onDelete={handleDeleteConsultation} />
+                 </div>
               </div>
             </div>
           )}
@@ -123,57 +145,231 @@ function App() {
   };
 
   if (accessStep === 'selection') return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-100 to-rose-100 p-4">
-      <div className="max-w-4xl w-full text-center">
-         <h1 className="text-5xl font-bold text-slate-800 mb-8">PediaCare<span className="text-blue-600">EMR</span></h1>
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <button onClick={() => setAccessStep('app')} className="bg-white/70 p-8 rounded-3xl border border-white shadow-xl text-left hover:scale-105 transition-all"><Unlock className="text-emerald-600 mb-4" /> <h2 className="text-2xl font-bold">Modo Demo</h2><p className="text-sm text-slate-600">Acceso libre para pruebas.</p></button>
-            <button onClick={() => setAccessStep('login')} className="bg-white/90 p-8 rounded-3xl border border-white shadow-xl text-left hover:scale-105 transition-all"><ShieldCheck className="text-indigo-600 mb-4" /> <h2 className="text-2xl font-bold">Modo Clínico</h2><p className="text-sm text-slate-600">Acceso restringido con clave.</p></button>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-[#f8fafc] via-[#e0f2fe] to-[#fef2f2] p-6 relative overflow-hidden">
+      {/* Decorative Blobs */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-200/30 blur-[120px] rounded-full" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-rose-200/30 blur-[120px] rounded-full" />
+
+      <div className="max-w-4xl w-full z-10">
+         <div className="text-center mb-16 animate-in fade-in slide-in-from-top-4 duration-700">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-black uppercase tracking-[0.2em] mb-6 shadow-sm border border-blue-200">
+              <Sparkles className="w-3.5 h-3.5" /> EMR Inteligente de Próxima Generación
+            </div>
+            <h1 className="text-7xl font-black text-slate-900 mb-6 tracking-tighter leading-none">
+              PediaCare<span className="text-blue-600">EMR</span>
+            </h1>
+            <p className="text-xl text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">
+              La plataforma definitiva para el médico pediatra moderno. Gestión clínica, IA aplicada y estándares internacionales en un solo lugar.
+            </p>
+         </div>
+
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            {/* OPCIÓN DEMO */}
+            <button 
+              onClick={() => setAccessStep('app')} 
+              className="group relative bg-white/70 backdrop-blur-2xl p-10 rounded-[3rem] border border-white shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] hover:shadow-emerald-200/50 transition-all hover:scale-[1.03] text-left active:scale-[0.98]"
+            >
+              <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-3xl flex items-center justify-center mb-10 group-hover:bg-emerald-600 group-hover:text-white group-hover:rotate-6 transition-all duration-300">
+                <Unlock className="w-8 h-8" />
+              </div>
+              <h2 className="text-3xl font-black text-slate-800 mb-2">Versión Prueba</h2>
+              <div className="inline-flex items-center gap-2 mb-6">
+                 <span className="px-3 py-1 rounded-full bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5">
+                   <Activity className="w-3 h-3" /> Acceso Libre
+                 </span>
+              </div>
+              <p className="text-slate-500 text-base leading-relaxed mb-10 font-medium">
+                Acceda instantáneamente para explorar todas las herramientas de consulta, cálculo de dosis y seguimiento de hitos.
+              </p>
+              <div className="flex items-center gap-2 text-emerald-600 font-black text-sm uppercase tracking-widest">
+                Comenzar Demo <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+              </div>
+            </button>
+
+            {/* OPCIÓN CLÍNICA */}
+            <button 
+              onClick={() => { setAccessStep('login'); setAuthError(false); setPasswordInput(''); }} 
+              className="group relative bg-slate-900 p-10 rounded-[3rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] hover:shadow-indigo-900/40 transition-all hover:scale-[1.03] text-left overflow-hidden active:scale-[0.98]"
+            >
+              <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/10 blur-[80px] rounded-full -mr-20 -mt-20" />
+              <div className="w-16 h-16 bg-indigo-500 text-white rounded-3xl flex items-center justify-center mb-10 group-hover:bg-white group-hover:text-indigo-600 group-hover:-rotate-6 transition-all duration-300">
+                <ShieldCheck className="w-8 h-8" />
+              </div>
+              <h2 className="text-3xl font-black text-white mb-2">Modo Clínico</h2>
+              <div className="inline-flex items-center gap-2 mb-6">
+                 <span className="px-3 py-1 rounded-full bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5">
+                   <ShieldCheck className="w-3 h-3" /> Contraseña Requerida
+                 </span>
+              </div>
+              <p className="text-slate-400 text-base leading-relaxed mb-10 font-medium">
+                Entrada segura para uso profesional. Proteja la integridad y privacidad de la información de sus pacientes.
+              </p>
+              <div className="flex items-center gap-2 text-indigo-400 font-black text-sm uppercase tracking-widest">
+                Ingreso Seguro <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+              </div>
+            </button>
+         </div>
+
+         {/* VERSION TAG */}
+         <div className="flex flex-col items-center gap-2 animate-in fade-in slide-in-from-bottom-2 duration-1000 delay-500">
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur border border-white/80 rounded-2xl shadow-sm">
+               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Versión de Sistema</span>
+               <span className="w-1 h-1 bg-slate-300 rounded-full" />
+               <span className="text-[11px] font-bold text-blue-600">{VERSION}</span>
+            </div>
+            <p className="text-[10px] text-slate-400 font-medium text-center max-w-sm">
+              © {new Date().getFullYear()} PediaCare Solutions. Todos los derechos reservados. <br/> Basado en guías AAP, OMS y CDC.
+            </p>
          </div>
       </div>
     </div>
   );
 
   if (accessStep === 'login') return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 p-4">
-      <form onSubmit={handleLoginSubmit} className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Acceso Autorizado</h2>
-        <input type="password" value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} className="w-full p-3 border rounded-xl mb-4" placeholder="Contraseña..." autoFocus />
-        {authError && <p className="text-red-500 text-xs mb-4">Clave incorrecta.</p>}
-        <button type="submit" className="w-full bg-indigo-600 text-white p-3 rounded-xl font-bold">Entrar</button>
-      </form>
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-tr from-indigo-50 via-white to-blue-50 opacity-60" />
+      
+      <div className="w-full max-w-md z-10">
+        <div className="bg-white p-10 rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] border border-slate-200 animate-in zoom-in-95 duration-500">
+          <div className="text-center mb-10">
+            <div className="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-sm">
+              <ShieldCheck className="w-10 h-10" />
+            </div>
+            <h1 className="text-3xl font-black text-slate-800 tracking-tight">Seguridad Clínica</h1>
+            <p className="text-slate-500 text-sm font-medium mt-2">Ingrese sus credenciales de acceso profesional</p>
+          </div>
+          
+          <form onSubmit={handleLoginSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">Clave de Autorización</label>
+              <input 
+                type="password" 
+                value={passwordInput} 
+                onChange={(e) => { setPasswordInput(e.target.value); setAuthError(false); }} 
+                className={`w-full px-6 py-5 rounded-2xl border-2 transition-all outline-none text-center font-black text-2xl tracking-[0.5em] placeholder:tracking-normal ${
+                  authError ? 'border-red-200 bg-red-50 text-red-600 animate-shake' : 'border-slate-100 focus:border-indigo-500 bg-slate-50/50'
+                }`} 
+                placeholder="••••" 
+                autoFocus 
+              />
+              {authError && (
+                <div className="flex items-center justify-center gap-1.5 text-red-600 mt-2 animate-in fade-in slide-in-from-top-2">
+                   <Info className="w-3.5 h-3.5" />
+                   <span className="text-[10px] font-black uppercase tracking-widest">Contraseña Incorrecta</span>
+                </div>
+              )}
+            </div>
+            
+            <button 
+              type="submit" 
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-5 rounded-2xl shadow-xl shadow-indigo-100 transition-all active:scale-95 text-sm uppercase tracking-widest"
+            >
+              Validar Acceso
+            </button>
+
+            <div className="pt-6 border-t border-slate-100 flex flex-col items-center gap-4">
+              <button 
+                type="button" 
+                onClick={() => setAccessStep('selection')} 
+                className="flex items-center gap-2 text-slate-400 font-black text-xs uppercase tracking-widest hover:text-red-500 transition-all group"
+              >
+                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Salir / Regresar
+              </button>
+              <div className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">
+                Versión {VERSION}
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   );
 
-  if (view === 'list') return <><div className="p-4 flex justify-end"><button onClick={handleLogout} className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border text-xs font-bold"><LogOut className="w-4 h-4" /> Salir</button></div><PatientList patients={patients} consultations={consultations} onSelect={handleSelectPatient} onNew={handleNewPatient} onDelete={(id) => setPatients(p => p.filter(x => x.id !== id))} onImportData={(p, c) => { setPatients(p); setConsultations(c); }} /><PediatricChatbot /></>;
+  if (view === 'list') return (
+    <div className="relative">
+      <div className="absolute top-4 right-4 z-40">
+        <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-white rounded-full text-xs font-bold text-slate-600 hover:text-red-600 border border-slate-200 shadow-sm transition-all active:scale-95">
+          <LogOut className="w-4 h-4" /> Salir de Sesión
+        </button>
+      </div>
+      <PatientList 
+        patients={patients} 
+        consultations={consultations} 
+        onSelect={handleSelectPatient} 
+        onNew={handleNewPatient} 
+        onDelete={(id) => { if(window.confirm("¿Confirma que desea eliminar este expediente definitivamente?")) setPatients(p => p.filter(x => x.id !== id)) }} 
+        onImportData={(p, c) => { setPatients(p); setConsultations(c); }} 
+      />
+      <PediatricChatbot />
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-slate-50/50">
+    <div className="min-h-screen font-sans pb-20 bg-slate-50/30">
       <DosageCalculator isOpen={showCalculator} onClose={() => setShowCalculator(false)} />
       <GrowthHistory isOpen={showGrowthHistory} onClose={() => setShowGrowthHistory(false)} patient={activePatient} consultations={allPatientConsultations} />
-      <header className="bg-white border-b h-16 flex items-center px-6 sticky top-0 z-40">
-        <button onClick={() => setView('list')} className="mr-4"><ArrowLeft /></button>
-        <span className="font-bold text-lg">PediaCare<span className="text-blue-600">EMR</span></span>
-        <div className="ml-auto text-right flex items-center gap-3">
-          <div><p className="text-sm font-bold">{activePatient.firstName} {activePatient.lastName}</p><p className="text-[10px] text-blue-600 font-black">{calculateAge(activePatient.dob)}</p></div>
-          <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">{activePatient.firstName[0]}</div>
+      
+      <header className="bg-white/80 backdrop-blur-md border-b h-16 flex items-center px-6 sticky top-0 z-40">
+        <button onClick={() => setView('list')} className="mr-4 p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-blue-600"><ArrowLeft /></button>
+        <span className="font-black text-xl tracking-tight">PediaCare<span className="text-blue-600">EMR</span></span>
+        
+        <div className="ml-auto flex items-center gap-4">
+           <button onClick={() => setShowCalculator(true)} className="p-2.5 bg-slate-50 rounded-xl text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all shadow-sm" title="Calculadora de Dosis">
+             <Activity className="w-5 h-5"/>
+           </button>
+           <div className="h-8 w-[1px] bg-slate-200 mx-1" />
+           <div className="text-right hidden sm:block">
+             <p className="text-sm font-black text-slate-800 leading-tight">{activePatient.firstName} {activePatient.lastName}</p>
+             <p className="text-[10px] text-blue-600 font-black uppercase tracking-widest">{calculateAge(activePatient.dob)}</p>
+           </div>
+           <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center font-black shadow-lg shadow-blue-100 ring-2 ring-white">
+             {activePatient.firstName[0]}
+           </div>
         </div>
       </header>
+
       <main className="max-w-[95rem] mx-auto px-6 py-8">
         {activePatient.id && (
-          <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-white p-5 rounded-2xl border shadow-sm"><h3 className="text-xs font-black text-red-600 flex items-center gap-2 mb-3"><ShieldAlert className="w-4 h-4" /> ALERGIAS</h3><p className={`p-3 rounded-xl font-bold ${activePatient.history.pathological.allergies ? 'bg-red-50 text-red-700 border border-red-100' : 'bg-green-50 text-green-700'}`}>{activePatient.history.pathological.allergies || "Ninguna registrada."}</p></div>
-            <div className="bg-white p-5 rounded-2xl border shadow-sm"><h3 className="text-xs font-black text-purple-600 flex items-center gap-2 mb-3"><ShieldHalf className="w-4 h-4" /> RIESGOS FAMILIARES</h3><div className="flex gap-2">{activePatient.history.family.diabetes && <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-lg text-[10px] font-bold">DIABETES</span>}{activePatient.history.family.hypertension && <span className="bg-red-100 text-red-700 px-2 py-1 rounded-lg text-[10px] font-bold">HTA</span>}{activePatient.history.family.asthma && <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-[10px] font-bold">ASMA</span>}<WindIcon className="w-4 h-4 text-slate-300" /></div></div>
+          <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+            <div className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="text-[10px] font-black text-red-600 flex items-center gap-2 mb-4 uppercase tracking-[0.2em]">
+                <ShieldAlert className="w-4 h-4" /> Alergias y Patológicos
+              </h3>
+              <p className={`p-4 rounded-2xl font-bold text-sm ${activePatient.history.pathological.allergies ? 'bg-red-50 text-red-700 border border-red-100' : 'bg-green-50 text-green-700 border border-green-100'}`}>
+                {activePatient.history.pathological.allergies || "Sin alergias conocidas."}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <span className="px-3 py-1.5 bg-slate-50 text-slate-500 rounded-xl text-[9px] font-black uppercase border border-slate-100">Medicamentos: {activePatient.history.pathological.medications || "Ninguno"}</span>
+                <span className="px-3 py-1.5 bg-slate-50 text-slate-500 rounded-xl text-[9px] font-black uppercase border border-slate-100">Cirugías: {activePatient.history.pathological.surgeries || "No"}</span>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="text-[10px] font-black text-purple-600 flex items-center gap-2 mb-4 uppercase tracking-[0.2em]">
+                <ShieldHalf className="w-4 h-4" /> Antecedentes Familiares
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {activePatient.history.family.diabetes && <span className="bg-purple-100 text-purple-700 px-4 py-2 rounded-xl text-[10px] font-black border border-purple-200 shadow-sm">DIABETES</span>}
+                {activePatient.history.family.hypertension && <span className="bg-rose-100 text-rose-700 px-4 py-2 rounded-xl text-[10px] font-black border border-rose-200 shadow-sm">HIPERTENSIÓN</span>}
+                {activePatient.history.family.asthma && <span className="bg-sky-100 text-sky-700 px-4 py-2 rounded-xl text-[10px] font-black border border-sky-200 shadow-sm">ASMA / RINITIS</span>}
+                {!activePatient.history.family.diabetes && !activePatient.history.family.hypertension && !activePatient.history.family.asthma && (
+                  <span className="text-slate-400 font-bold text-sm italic py-2">No se han marcado antecedentes familiares de riesgo.</span>
+                )}
+              </div>
+            </div>
           </div>
         )}
+
         <div className="min-h-[60vh]">{renderStep()}</div>
       </main>
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t h-16 flex justify-around items-center z-50 shadow-2xl">
-         <button onClick={() => setView('list')} className="flex flex-col items-center text-slate-400 hover:text-blue-600"><Users className="w-5 h-5" /><span className="text-[10px] font-bold">Inicio</span></button>
-         <button onClick={() => setCurrentStep(1)} className={`flex flex-col items-center ${currentStep === 1 ? 'text-blue-600' : 'text-slate-400'}`}><FileText className="w-5 h-5" /><span className="text-[10px] font-bold">Datos</span></button>
-         <button onClick={() => setCurrentStep(2)} className={`flex flex-col items-center ${currentStep === 2 ? 'text-blue-600' : 'text-slate-400'}`}><Baby className="w-5 h-5" /><span className="text-[10px] font-bold">Hitos</span></button>
-         <button onClick={() => setCurrentStep(3)} className={`flex flex-col items-center ${currentStep === 3 ? 'text-blue-600' : 'text-slate-400'}`}><Stethoscope className="w-5 h-5" /><span className="text-[10px] font-bold">Consulta</span></button>
+
+      <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t h-16 flex justify-around items-center z-50 shadow-[0_-8px_24px_rgba(0,0,0,0.05)]">
+         <button onClick={() => setView('list')} className="flex flex-col items-center gap-0.5 text-slate-400 hover:text-blue-600 transition-all"><Users className="w-5 h-5" /><span className="text-[9px] font-black uppercase tracking-widest">Inicio</span></button>
+         <button onClick={() => setCurrentStep(1)} className={`flex flex-col items-center gap-0.5 transition-all ${currentStep === 1 ? 'text-blue-600 scale-110' : 'text-slate-400'}`}><FileText className="w-5 h-5" /><span className="text-[9px] font-black uppercase tracking-tighter">Ficha</span></button>
+         <button onClick={() => setCurrentStep(2)} className={`flex flex-col items-center gap-0.5 transition-all ${currentStep === 2 ? 'text-blue-600 scale-110' : 'text-slate-400'}`}><Baby className="w-5 h-5" /><span className="text-[9px] font-black uppercase tracking-tighter">Vacunas</span></button>
+         <button onClick={() => setCurrentStep(3)} className={`flex flex-col items-center gap-0.5 transition-all ${currentStep === 3 ? 'text-blue-600 scale-110' : 'text-slate-400'}`}><Stethoscope className="w-5 h-5" /><span className="text-[9px] font-black uppercase tracking-tighter">SOAP</span></button>
       </div>
+      
       <PediatricChatbot />
     </div>
   );
