@@ -1,3 +1,4 @@
+
 export interface ParentInfo {
   name: string;
   age: number | '';
@@ -5,6 +6,23 @@ export interface ParentInfo {
 }
 
 export type MilestoneCategory = 'motor' | 'language' | 'social' | 'cognitive';
+
+// Added Vaccine interface for AAP schedule
+export interface Vaccine {
+  id: string;
+  name: string;
+  dose: string;
+  recommendedAge: string;
+  offsetMonths: number;
+}
+
+// Added Milestone interface for development tracking
+export interface Milestone {
+  id: string;
+  ageGroup: string;
+  category: MilestoneCategory;
+  description: string;
+}
 
 export interface MilestoneData {
   achievedAge: string;
@@ -44,7 +62,7 @@ export interface Patient {
   id: string;
   firstName: string;
   lastName: string;
-  gender: 'male' | 'female' | 'other'; // Added gender for growth charts
+  gender: 'male' | 'female' | 'other';
   dob: string;
   address: string;
   phone: string;
@@ -53,24 +71,23 @@ export interface Patient {
   father: ParentInfo;
   mother: ParentInfo;
   history: MedicalHistory;
-  vaccines: Record<string, string>; // VaccineID -> Date string
-  otherVaccines: OtherVaccine[]; // Added for custom vaccines
+  vaccines: Record<string, string>;
+  otherVaccines: OtherVaccine[];
   milestones: Record<string, MilestoneData>;
 }
 
-export interface Vaccine {
+export interface ClinicalDiagnosis {
   id: string;
-  name: string;
-  dose: string;
-  recommendedAge: string;
-  offsetMonths: number;
+  assessment: string;
+  treatment: string;
+  educationalPlan: string;
+  labRequests: string;
 }
 
-export interface Milestone {
-  id: string;
-  ageGroup: string;
-  description: string;
-  category: MilestoneCategory;
+export interface SoapNote {
+  subjective: string;
+  objective: string;
+  diagnoses: ClinicalDiagnosis[];
 }
 
 export interface VitalSigns {
@@ -81,7 +98,7 @@ export interface VitalSigns {
   temperature: string;
   heartRate: string;
   respiratoryRate: string;
-  bloodPressure?: string; // Added field
+  bloodPressure?: string;
 }
 
 export type LabCategory = 'blood' | 'urine' | 'stool' | 'radiology' | 'other';
@@ -94,20 +111,13 @@ export interface LabResult {
   date: string;
 }
 
-export interface SoapNote {
-  subjective: string;
-  objective: string;
-  assessment: string;
-  plan: string;
-}
-
 export interface Consultation {
   id: string;
   patientId: string;
   date: string;
   patientAge: string;
-  vitalSigns: VitalSigns; // Added vitals to consultation
-  labResults?: LabResult[]; // Added lab results
+  vitalSigns: VitalSigns;
+  labResults?: LabResult[];
   soap: SoapNote;
   aiAnalysis?: string;
 }
