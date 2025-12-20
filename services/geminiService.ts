@@ -34,7 +34,7 @@ export const analyzeSoapNote = async (note: SoapNote, patientSummary: string): P
 
   try {
     const response = await client.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3-flash-preview',
       contents: prompt,
     });
     return response.text || "No se pudo generar el análisis.";
