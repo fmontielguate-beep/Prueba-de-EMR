@@ -133,7 +133,7 @@ const WeedConsultation: React.FC<Props> = ({ patient, onSave }) => {
         <div className="space-y-4 pb-12">
           <div className="flex justify-between items-center px-4">
              <h3 className="text-xs font-black text-slate-400 uppercase flex items-center gap-2"><ClipboardList className="text-emerald-500 w-4 h-4" /> Diagnóstico y Plan</h3>
-             <button onClick={addDiagnosis} className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-xs font-black shadow-lg transition-all"><Plus className="w-4 h-4" /> Nuevo Diagnóstico</button>
+             <button onClick={addDiagnosis} className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-xs font-black shadow-lg transition-all active:scale-95"><Plus className="w-4 h-4" /> Nuevo Diagnóstico</button>
           </div>
 
           {note.diagnoses.map((diag, index) => (
@@ -148,11 +148,23 @@ const WeedConsultation: React.FC<Props> = ({ patient, onSave }) => {
                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-400 uppercase flex items-center gap-1.5 ml-1 tracking-widest"><Pill className="w-3.5 h-3.5 text-blue-500" /> Tratamiento</label>
-                    <textarea value={diag.treatment} onChange={(e) => handleDiagnosisChange(diag.id, 'treatment', e.target.value)} placeholder="Medicamentos y dosis..." className="w-full h-32 p-4 rounded-2xl border text-xs bg-slate-50/50 outline-none" />
+                    <textarea value={diag.treatment} onChange={(e) => handleDiagnosisChange(diag.id, 'treatment', e.target.value)} placeholder="Medicamentos y dosis..." className="w-full h-32 p-4 rounded-2xl border text-xs bg-slate-50/50 outline-none focus:bg-white transition-all border-slate-100" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-400 uppercase flex items-center gap-1.5 ml-1 tracking-widest"><BookOpen className="w-3.5 h-3.5 text-orange-500" /> Plan / Alarmas</label>
-                    <textarea value={diag.educationalPlan} onChange={(e) => handleDiagnosisChange(diag.id, 'educationalPlan', e.target.value)} placeholder="Instrucciones y signos de alarma..." className="w-full h-32 p-4 rounded-2xl border text-xs bg-slate-50/50 outline-none" />
+                    <textarea value={diag.educationalPlan} onChange={(e) => handleDiagnosisChange(diag.id, 'educationalPlan', e.target.value)} placeholder="Instrucciones y signos de alarma..." className="w-full h-32 p-4 rounded-2xl border text-xs bg-slate-50/50 outline-none focus:bg-white transition-all border-slate-100" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase flex items-center gap-1.5 ml-1 tracking-widest">
+                      <Microscope className="w-3.5 h-3.5 text-purple-500" /> Estudios Complementarios (Labs / Rx)
+                    </label>
+                    <input 
+                      type="text" 
+                      value={diag.labRequests} 
+                      onChange={(e) => handleDiagnosisChange(diag.id, 'labRequests', e.target.value)} 
+                      placeholder="Laboratorios o estudios de imagen solicitados..." 
+                      className="w-full border-b border-slate-200 py-2 text-sm outline-none focus:border-purple-500 bg-transparent transition-all" 
+                    />
                   </div>
                </div>
             </div>
