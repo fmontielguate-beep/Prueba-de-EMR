@@ -11,7 +11,7 @@ import DosageCalculator from './components/DosageCalculator';
 import PediatricChatbot from './components/PediatricChatbot';
 import CalendarPopup from './components/CalendarPopup';
 import { Patient, SoapNote, Consultation, VitalSigns, LabResult } from './types';
-import { Activity, ArrowLeft, Calculator, History, X, FileText, Users, Baby, Stethoscope, Undo2, Lock, ShieldAlert, KeyRound, FlaskConical, Database, ShieldCheck, LogOut, ClipboardList, Sparkles, Calendar as CalendarIcon, Unlock } from 'lucide-react';
+import { Activity, ArrowLeft, Calculator, History, X, FileText, Users, Baby, Stethoscope, Undo2, Lock, ShieldAlert, KeyRound, FlaskConical, ShieldCheck, LogOut, ClipboardList, Sparkles, Calendar as CalendarIcon, Unlock } from 'lucide-react';
 
 // Helpers
 const calculateAge = (dobString: string): string => {
