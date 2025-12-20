@@ -41,7 +41,7 @@ const emptyPatient: Patient = {
   vaccines: {}, otherVaccines: [], milestones: {},
 };
 
-const VERSION = "v2.5.1-pro";
+const VERSION = "v2.5.2-pro";
 
 function App() {
   const [accessStep, setAccessStep] = useState<'selection' | 'login' | 'app'>('selection');
@@ -113,10 +113,10 @@ function App() {
         <div className="pb-20 max-w-[95rem] mx-auto relative">
           <div className="flex justify-end gap-3 mb-4">
              <button onClick={() => setShowGrowthHistory(true)} className="flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-blue-100 transition-all">
-               <TrendingUp className="w-4 h-4" /> Antropometría
+               <TrendingUp className="w-4 h-4" /> Ver Histórico Crecimiento
              </button>
              <button onClick={() => setShowHistoryPanel(true)} className="flex items-center gap-2 bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium shadow-sm hover:bg-slate-50 transition-all">
-               <History className="w-4 h-4" /> Historial Completo ({allPatientConsultations.length})
+               <History className="w-4 h-4" /> Historial Consultas ({allPatientConsultations.length})
              </button>
           </div>
           <WeedConsultation patient={activePatient} onSave={handleSaveConsultation} />
@@ -159,7 +159,6 @@ function App() {
          </div>
 
          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
-            {/* OPCIÓN DEMO */}
             <button 
               onClick={() => setAccessStep('app')} 
               className="group relative bg-white/70 backdrop-blur-2xl p-10 rounded-[3rem] border border-white shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] hover:shadow-emerald-200/50 transition-all hover:scale-[1.03] text-left active:scale-[0.98]"
@@ -181,7 +180,6 @@ function App() {
               </div>
             </button>
 
-            {/* OPCIÓN CLÍNICA */}
             <button 
               onClick={() => { setAccessStep('login'); setAuthError(false); setPasswordInput(''); }} 
               className="group relative bg-slate-900 p-10 rounded-[3rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] hover:shadow-indigo-900/40 transition-all hover:scale-[1.03] text-left overflow-hidden active:scale-[0.98]"
@@ -205,15 +203,11 @@ function App() {
             </button>
          </div>
 
-         {/* VERSION TAG - JUST BELOW BUTTONS */}
          <div className="mt-10 flex items-center gap-3 px-6 py-2.5 bg-white/40 backdrop-blur-sm border border-white/60 rounded-2xl shadow-sm animate-in fade-in duration-1000 delay-500">
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">System Build</span>
             <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
             <span className="text-[11px] font-bold text-slate-700">{VERSION}</span>
          </div>
-         <p className="text-[10px] text-slate-400 font-medium text-center mt-4">
-           © {new Date().getFullYear()} PediaCare Solutions • Basado en guías AAP, OMS y CDC.
-         </p>
       </div>
     </div>
   );
@@ -267,9 +261,6 @@ function App() {
               >
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Salir / Regresar
               </button>
-              <div className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">
-                VERSIÓN {VERSION}
-              </div>
             </div>
           </form>
         </div>
