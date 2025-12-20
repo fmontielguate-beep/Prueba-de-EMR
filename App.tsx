@@ -10,8 +10,9 @@ import PatientList from './components/PatientList';
 import DosageCalculator from './components/DosageCalculator';
 import PediatricChatbot from './components/PediatricChatbot';
 import GrowthHistory from './components/GrowthHistory';
+import CalendarPopup from './components/CalendarPopup';
 import { Patient, SoapNote, Consultation, VitalSigns, LabResult } from './types';
-import { Activity, ArrowLeft, History, X, FileText, Users, Baby, Stethoscope, ShieldAlert, Unlock, ShieldCheck, LogOut, Sparkles, TrendingUp, ShieldHalf, ChevronRight } from 'lucide-react';
+import { Activity, ArrowLeft, History, X, FileText, Users, Baby, Stethoscope, ShieldAlert, Unlock, ShieldCheck, LogOut, Sparkles, TrendingUp, ShieldHalf, ChevronRight, Calculator, Calendar as CalendarIcon } from 'lucide-react';
 
 // Helpers
 const calculateAge = (dobString: string): string => {
@@ -41,7 +42,7 @@ const emptyPatient: Patient = {
   vaccines: {}, otherVaccines: [], milestones: {},
 };
 
-const VERSION = "v2.5.2-pro";
+const VERSION = "v2.5.3-pro";
 
 function App() {
   const [accessStep, setAccessStep] = useState<'selection' | 'login' | 'app'>('selection');
@@ -50,6 +51,7 @@ function App() {
   const [view, setView] = useState<'list' | 'detail'>('list');
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [showCalculator, setShowCalculator] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
   const [showGrowthHistory, setShowGrowthHistory] = useState(false);
   const [showHistoryPanel, setShowHistoryPanel] = useState(false);
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -113,10 +115,10 @@ function App() {
         <div className="pb-20 max-w-[95rem] mx-auto relative">
           <div className="flex justify-end gap-3 mb-4">
              <button onClick={() => setShowGrowthHistory(true)} className="flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-blue-100 transition-all">
-               <TrendingUp className="w-4 h-4" /> Ver Histórico Crecimiento
+               <TrendingUp className="w-4 h-4" /> Antropometría Histórica
              </button>
              <button onClick={() => setShowHistoryPanel(true)} className="flex items-center gap-2 bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium shadow-sm hover:bg-slate-50 transition-all">
-               <History className="w-4 h-4" /> Historial Consultas ({allPatientConsultations.length})
+               <History className="w-4 h-4" /> Historial Completo ({allPatientConsultations.length})
              </button>
           </div>
           <WeedConsultation patient={activePatient} onSave={handleSaveConsultation} />
@@ -290,15 +292,19 @@ function App() {
   return (
     <div className="min-h-screen font-sans pb-20 bg-slate-50/30">
       <DosageCalculator isOpen={showCalculator} onClose={() => setShowCalculator(false)} />
+      <CalendarPopup isOpen={showCalendar} onClose={() => setShowCalendar(false)} />
       <GrowthHistory isOpen={showGrowthHistory} onClose={() => setShowGrowthHistory(false)} patient={activePatient} consultations={allPatientConsultations} />
       
       <header className="bg-white/80 backdrop-blur-md border-b h-16 flex items-center px-6 sticky top-0 z-40">
         <button onClick={() => setView('list')} className="mr-4 p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-blue-600"><ArrowLeft /></button>
         <span className="font-black text-xl tracking-tight">PediaCare<span className="text-blue-600">EMR</span></span>
         
-        <div className="ml-auto flex items-center gap-4">
+        <div className="ml-auto flex items-center gap-3">
            <button onClick={() => setShowCalculator(true)} className="p-2.5 bg-slate-50 rounded-xl text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all shadow-sm" title="Calculadora de Dosis">
-             <Activity className="w-5 h-5"/>
+             <Calculator className="w-5 h-5"/>
+           </button>
+           <button onClick={() => setShowCalendar(true)} className="p-2.5 bg-slate-50 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all shadow-sm" title="Calendario">
+             <CalendarIcon className="w-5 h-5"/>
            </button>
            <div className="h-8 w-[1px] bg-slate-200 mx-1" />
            <div className="text-right hidden sm:block">

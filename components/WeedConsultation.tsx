@@ -1,6 +1,6 @@
+
 import React, { useState, useMemo } from 'react';
 import { SoapNote, Patient, VitalSigns, LabResult, ClinicalDiagnosis } from '../types';
-// Added TrendingUp to imports
 import { Stethoscope, Sparkles, Save, Activity, Plus, Trash2, Pill, BookOpen, ClipboardList, Microscope, Scale, Ruler, Brain, HeartPulse, Wind, TrendingUp } from 'lucide-react';
 import { analyzeSoapNote } from '../services/geminiService';
 import { calculateAgeInMonths, analyzeGrowth, analyzeBloodPressure } from '../utils/growthStandards';
@@ -82,7 +82,7 @@ const WeedConsultation: React.FC<Props> = ({ patient, onSave }) => {
            <div className="flex justify-between items-center mb-6">
               <h3 className="text-xs font-black text-slate-400 uppercase flex items-center gap-2"><Activity className="text-red-500 w-4 h-4" /> Registro de Signos Vitales</h3>
               <div className="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-black uppercase tracking-widest border border-blue-100">
-                IMC: {biometrics.bmi}
+                IMC Estimado: {biometrics.bmi}
               </div>
            </div>
 
@@ -109,7 +109,7 @@ const WeedConsultation: React.FC<Props> = ({ patient, onSave }) => {
                     <span className={`text-[10px] font-black uppercase ${biometrics.bpResult.color}`}>{biometrics.bpResult.status}</span>
                     <span className="text-[8px] text-slate-400">{biometrics.bpResult.detail}</span>
                   </div>
-                ) : <span className="text-[10px] text-slate-300 font-bold italic">Esperando datos...</span>}
+                ) : <span className="text-[10px] text-slate-300 font-bold italic">Esperando P.A...</span>}
               </div>
            </div>
         </div>
@@ -120,11 +120,11 @@ const WeedConsultation: React.FC<Props> = ({ patient, onSave }) => {
           <div className="space-y-4">
              <div className="space-y-1">
                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Subjetivo (Anamnesis)</label>
-               <textarea value={note.subjective} onChange={(e) => setNote({...note, subjective: e.target.value})} placeholder="S: Motivo de consulta, evolución de síntomas, interrogatorio..." className="w-full h-32 p-4 rounded-2xl border bg-slate-50/30 text-sm resize-none focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+               <textarea value={note.subjective} onChange={(e) => setNote({...note, subjective: e.target.value})} placeholder="S: Motivo de consulta, evolución de síntomas..." className="w-full h-32 p-4 rounded-2xl border bg-slate-50/30 text-sm resize-none focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
              </div>
              <div className="space-y-1">
-               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Objetivo (Hallazgos Clínicos)</label>
-               <textarea value={note.objective} onChange={(e) => setNote({...note, objective: e.target.value})} placeholder="O: Hallazgos positivos al examen físico por sistemas..." className="w-full h-32 p-4 rounded-2xl border bg-slate-50/30 text-sm resize-none focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Objetivo (Exploración)</label>
+               <textarea value={note.objective} onChange={(e) => setNote({...note, objective: e.target.value})} placeholder="O: Hallazgos positivos al examen físico..." className="w-full h-32 p-4 rounded-2xl border bg-slate-50/30 text-sm resize-none focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
              </div>
           </div>
         </div>
@@ -132,31 +132,27 @@ const WeedConsultation: React.FC<Props> = ({ patient, onSave }) => {
         {/* DIAGNÓSTICOS MÚLTIPLES */}
         <div className="space-y-4 pb-12">
           <div className="flex justify-between items-center px-4">
-             <h3 className="text-xs font-black text-slate-400 uppercase flex items-center gap-2"><ClipboardList className="text-emerald-500 w-4 h-4" /> Impresión Clínica y Plan de Manejo</h3>
-             <button onClick={addDiagnosis} className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-xs font-black shadow-lg shadow-emerald-100 transition-all active:scale-95"><Plus className="w-4 h-4" /> Nuevo Diagnóstico</button>
+             <h3 className="text-xs font-black text-slate-400 uppercase flex items-center gap-2"><ClipboardList className="text-emerald-500 w-4 h-4" /> Diagnóstico y Plan</h3>
+             <button onClick={addDiagnosis} className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-xs font-black shadow-lg transition-all"><Plus className="w-4 h-4" /> Nuevo Diagnóstico</button>
           </div>
 
           {note.diagnoses.map((diag, index) => (
             <div key={diag.id} className="bg-white p-8 rounded-[2.5rem] border-2 border-emerald-50 shadow-sm relative animate-in slide-in-from-left-4 duration-500">
                {note.diagnoses.length > 1 && (
-                 <button onClick={() => setNote({...note, diagnoses: note.diagnoses.filter(d => d.id !== diag.id)})} className="absolute top-6 right-6 text-slate-300 hover:text-red-500 transition-colors p-2"><Trash2 className="w-5 h-5" /></button>
+                 <button onClick={() => setNote({...note, diagnoses: note.diagnoses.filter(d => d.id !== diag.id)})} className="absolute top-6 right-6 text-slate-300 hover:text-red-500 p-2 transition-colors"><Trash2 className="w-5 h-5" /></button>
                )}
                <div className="flex items-center gap-4 mb-6">
-                  <span className="bg-emerald-600 text-white w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm shadow-md">{index+1}</span>
-                  <input type="text" value={diag.assessment} onChange={(e) => handleDiagnosisChange(diag.id, 'assessment', e.target.value)} placeholder="Diagnóstico o Impresión Clínica..." className="flex-1 border-b-2 border-slate-100 focus:border-emerald-500 font-black text-lg uppercase outline-none py-1 bg-transparent transition-all" />
+                  <span className="bg-emerald-600 text-white w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm">{index+1}</span>
+                  <input type="text" value={diag.assessment} onChange={(e) => handleDiagnosisChange(diag.id, 'assessment', e.target.value)} placeholder="Diagnóstico..." className="flex-1 border-b-2 border-slate-100 focus:border-emerald-500 font-black text-lg uppercase outline-none py-1 bg-transparent transition-all" />
                </div>
                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase flex items-center gap-1.5 tracking-widest ml-1"><Pill className="w-3.5 h-3.5 text-blue-500" /> Tratamiento (Dosis y Vía)</label>
-                    <textarea value={diag.treatment} onChange={(e) => handleDiagnosisChange(diag.id, 'treatment', e.target.value)} placeholder="Ej: Acetaminofén 150mg/5ml: dar 5ml cada 6 horas por fiebre..." className="w-full h-32 p-4 rounded-2xl border text-xs bg-slate-50/50 focus:bg-white transition-all outline-none border-slate-100 focus:border-blue-400" />
+                    <label className="text-[10px] font-black text-slate-400 uppercase flex items-center gap-1.5 ml-1 tracking-widest"><Pill className="w-3.5 h-3.5 text-blue-500" /> Tratamiento</label>
+                    <textarea value={diag.treatment} onChange={(e) => handleDiagnosisChange(diag.id, 'treatment', e.target.value)} placeholder="Medicamentos y dosis..." className="w-full h-32 p-4 rounded-2xl border text-xs bg-slate-50/50 outline-none" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase flex items-center gap-1.5 tracking-widest ml-1"><BookOpen className="w-3.5 h-3.5 text-orange-500" /> Plan Educacional y Alarmas</label>
-                    <textarea value={diag.educationalPlan} onChange={(e) => handleDiagnosisChange(diag.id, 'educationalPlan', e.target.value)} placeholder="Instrucciones a padres, medidas generales y signos de alerta para volver..." className="w-full h-32 p-4 rounded-2xl border text-xs bg-slate-50/50 focus:bg-white transition-all outline-none border-slate-100 focus:border-orange-400" />
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase flex items-center gap-1.5 tracking-widest ml-1"><Microscope className="w-3.5 h-3.5 text-purple-500" /> Estudios Complementarios</label>
-                    <input type="text" value={diag.labRequests} onChange={(e) => handleDiagnosisChange(diag.id, 'labRequests', e.target.value)} className="w-full border-b border-slate-200 py-2 text-sm outline-none focus:border-purple-500 transition-all" placeholder="Laboratorios, Rayos X, Ultrasonidos solicitados..." />
+                    <label className="text-[10px] font-black text-slate-400 uppercase flex items-center gap-1.5 ml-1 tracking-widest"><BookOpen className="w-3.5 h-3.5 text-orange-500" /> Plan / Alarmas</label>
+                    <textarea value={diag.educationalPlan} onChange={(e) => handleDiagnosisChange(diag.id, 'educationalPlan', e.target.value)} placeholder="Instrucciones y signos de alarma..." className="w-full h-32 p-4 rounded-2xl border text-xs bg-slate-50/50 outline-none" />
                   </div>
                </div>
             </div>
@@ -172,31 +168,28 @@ const WeedConsultation: React.FC<Props> = ({ patient, onSave }) => {
 
       <div className="lg:col-span-1">
         <div className="sticky top-24 space-y-4">
-          <button onClick={handleAIAnalysis} disabled={isAnalyzing} className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 text-white p-5 rounded-2xl font-black flex items-center justify-center gap-3 shadow-xl transition-all group overflow-hidden relative">
-            {isAnalyzing ? <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" /> : <Sparkles className="w-5 h-5 group-hover:scale-125 transition-transform" />}
-            <span className="text-xs uppercase tracking-widest">Análisis Clínico IA</span>
+          <button onClick={handleAIAnalysis} disabled={isAnalyzing} className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 text-white p-5 rounded-2xl font-black flex items-center justify-center gap-3 shadow-xl transition-all">
+            {isAnalyzing ? <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" /> : <Sparkles className="w-5 h-5" />}
+            <span className="text-xs uppercase tracking-widest">IA Clínica</span>
           </button>
           
           {aiAnalysis && (
-             <div className="bg-white border-2 border-indigo-100 p-6 rounded-[2rem] shadow-xl animate-in zoom-in-95 duration-500">
+             <div className="bg-white border-2 border-indigo-100 p-6 rounded-[2rem] shadow-xl animate-in zoom-in-95">
                <div className="flex items-center gap-2 mb-4 border-b pb-3">
-                 <div className="bg-indigo-50 p-2 rounded-xl text-indigo-600"><Sparkles className="w-4 h-4" /></div>
-                 <h4 className="indigo-900 font-black text-[10px] uppercase tracking-widest">Insights PediaCare</h4>
+                 <Sparkles className="w-4 h-4 text-indigo-600" />
+                 <h4 className="text-indigo-900 font-black text-[10px] uppercase tracking-widest">Análisis IA</h4>
                </div>
-               <p className="text-[11px] text-slate-700 whitespace-pre-wrap leading-relaxed font-medium italic">{aiAnalysis}</p>
+               <p className="text-[11px] text-slate-700 whitespace-pre-wrap leading-relaxed font-medium">{aiAnalysis}</p>
              </div>
           )}
 
           <div className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
-             <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-               {/* TrendingUp is now correctly imported */}
-               <TrendingUp className="w-4 h-4 text-blue-500"/> Resumen Somatometría
-             </h4>
+             <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2"><TrendingUp className="w-4 h-4 text-blue-500"/> Nutrición (Z-Score)</h4>
              <div className="space-y-4">
-               <SummaryItem label="Peso para Edad" analysis={biometrics.growth.wfa} />
-               <SummaryItem label="Talla para Edad" analysis={biometrics.growth.hfa} />
-               <SummaryItem label="Peso para Talla" analysis={biometrics.growth.wfh} />
-               <SummaryItem label="Circ. Cefálica" analysis={biometrics.growth.hca} />
+               <SummaryItem label="Peso / Edad" analysis={biometrics.growth.wfa} />
+               <SummaryItem label="Talla / Edad" analysis={biometrics.growth.hfa} />
+               <SummaryItem label="Peso / Talla" analysis={biometrics.growth.wfh} />
+               <SummaryItem label="C. Cefálica" analysis={biometrics.growth.hca} />
              </div>
           </div>
         </div>
@@ -207,7 +200,7 @@ const WeedConsultation: React.FC<Props> = ({ patient, onSave }) => {
 
 // Componentes Auxiliares
 const VitalInput = ({ label, value, onChange, icon, placeholder = '0.0' }: { label: string, value: string, onChange: (v: string) => void, icon: React.ReactNode, placeholder?: string }) => (
-  <div className="bg-slate-50/50 p-4 rounded-2xl border border-slate-100 group focus-within:bg-white focus-within:border-blue-300 transition-all">
+  <div className="bg-slate-50/50 p-4 rounded-2xl border border-slate-100 focus-within:bg-white focus-within:border-blue-300 transition-all">
     <label className="text-[9px] font-black text-slate-400 uppercase flex items-center gap-1.5 mb-1 tracking-tight">
       {icon} {label}
     </label>
@@ -216,20 +209,20 @@ const VitalInput = ({ label, value, onChange, icon, placeholder = '0.0' }: { lab
       value={value} 
       onChange={(e) => onChange(e.target.value)} 
       placeholder={placeholder}
-      className="w-full bg-transparent border-none outline-none font-black text-lg text-slate-800 placeholder:text-slate-200" 
+      className="w-full bg-transparent border-none outline-none font-black text-lg text-slate-800" 
     />
   </div>
 );
 
 const PercentileTag = ({ analysis }: { analysis: any }) => {
   if (!analysis) return (
-    <div className="bg-white p-2.5 rounded-xl border shadow-sm opacity-50">
-      <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-1">N/A</p>
-      <span className="text-[10px] text-slate-200 font-bold italic">Sin datos</span>
+    <div className="bg-white p-2.5 rounded-xl border opacity-50">
+      <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-1">Cálculo</p>
+      <span className="text-[10px] text-slate-200 font-bold italic">Pendiente</span>
     </div>
   );
   return (
-    <div className="bg-white p-2.5 rounded-xl border shadow-sm hover:border-blue-200 transition-colors">
+    <div className="bg-white p-2.5 rounded-xl border shadow-sm">
       <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">{analysis.label}</p>
       <div className="flex flex-col gap-0.5">
         <span className={`text-[10px] font-black uppercase ${analysis.color}`}>{analysis.status}</span>
