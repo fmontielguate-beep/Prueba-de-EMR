@@ -12,7 +12,7 @@ import PediatricChatbot from './components/PediatricChatbot';
 import CalendarPopup from './components/CalendarPopup';
 import GrowthHistory from './components/GrowthHistory';
 import { Patient, SoapNote, Consultation, VitalSigns, LabResult } from './types';
-import { Activity, ArrowLeft, Calculator, History, X, FileText, Users, Baby, Stethoscope, Undo2, Lock, ShieldAlert, KeyRound, FlaskConical, ShieldCheck, LogOut, ClipboardList, Sparkles, Calendar as CalendarIcon, Unlock, TrendingUp, Trash2, AlertCircle, Pill, HeartPulse, ShieldHalf } from 'lucide-react';
+import { Activity, ArrowLeft, History, X, FileText, Users, Baby, Stethoscope, Lock, ShieldAlert, KeyRound, FlaskConical, ShieldCheck, LogOut, ClipboardList, Sparkles, Unlock, TrendingUp, Trash2, Pill, HeartPulse, ShieldHalf } from 'lucide-react';
 
 // Helpers
 const calculateAge = (dobString: string): string => {
@@ -39,7 +39,7 @@ const generateId = () => {
 };
 
 // Icono Wind (para Asma)
-const Wind = ({ className }: { className?: string }) => (
+const WindIcon = ({ className }: { className?: string }) => (
   <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>
 );
 
@@ -67,15 +67,10 @@ const emptyPatient: Patient = {
 };
 
 function App() {
-  // Navigation & Access State
   const [accessStep, setAccessStep] = useState<'selection' | 'login' | 'app'>('selection');
-  const [isDemoMode, setIsDemoMode] = useState(false);
-  
-  // Auth State
   const [passwordInput, setPasswordInput] = useState('');
   const [authError, setAuthError] = useState(false);
 
-  // App State
   const [view, setView] = useState<'list' | 'detail'>('list');
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [showCalculator, setShowCalculator] = useState(false);
@@ -83,7 +78,6 @@ function App() {
   const [showGrowthHistory, setShowGrowthHistory] = useState(false);
   const [showHistoryPanel, setShowHistoryPanel] = useState(false);
   
-  // Database
   const [patients, setPatients] = useState<Patient[]>([]);
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [activePatient, setActivePatient] = useState<Patient>(emptyPatient);
@@ -92,12 +86,10 @@ function App() {
 
   const handleSelectDemo = () => {
     setAccessStep('app');
-    setIsDemoMode(true);
   };
 
   const handleSelectFull = () => {
     setAccessStep('login');
-    setIsDemoMode(false);
     setAuthError(false);
     setPasswordInput('');
   };
@@ -114,11 +106,9 @@ function App() {
 
   const handleLogout = () => {
     setAccessStep('selection');
-    setIsDemoMode(false);
     setView('list');
     setActivePatient(emptyPatient);
     setPasswordInput('');
-    setAuthError(false);
   };
 
   const handleNewPatient = () => {
@@ -149,7 +139,7 @@ function App() {
 
   const handleDeleteConsultation = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    if (!window.confirm("¿Está seguro de eliminar este registro duplicado? Esta acción no se puede deshacer.")) return;
+    if (!window.confirm("¿Desea eliminar este registro histórico?")) return;
     setConsultations(prev => prev.filter(c => c.id !== id));
   };
 
@@ -218,7 +208,6 @@ function App() {
             </div>
             <WeedConsultation patient={activePatient} onSave={handleSaveConsultation} />
             
-            {/* Panel Lateral de Historial */}
             <div className={`fixed inset-0 z-50 overflow-hidden transition-all duration-300 ${showHistoryPanel ? 'pointer-events-auto' : 'pointer-events-none'}`}>
               <div className={`absolute inset-0 bg-slate-900/30 backdrop-blur-sm transition-opacity duration-300 ${showHistoryPanel ? 'opacity-100' : 'opacity-0'}`} onClick={() => setShowHistoryPanel(false)} />
               <div className={`absolute inset-y-0 right-0 max-w-full flex transition-transform duration-300 ease-in-out ${showHistoryPanel ? 'translate-x-0' : 'translate-x-full'}`}>
@@ -245,18 +234,18 @@ function App() {
         <div className="max-w-4xl w-full">
            <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-slate-800 tracking-tight mb-4">PediaCare<span className="text-blue-600">EMR</span></h1>
-            <p className="text-lg text-slate-600">Gestión de Expedientes Médicos Pediátricos</p>
+            <p className="text-lg text-slate-600">Sistema Integral de Expediente Médico Pediátrico</p>
            </div>
            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <button onClick={handleSelectDemo} className="group bg-white/60 backdrop-blur-xl p-8 rounded-3xl border border-white shadow-xl hover:shadow-2xl transition-all text-left">
                 <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mb-6"><Unlock className="w-8 h-8" /></div>
                 <h2 className="text-2xl font-bold text-slate-800 mb-2">Versión Prueba</h2>
-                <p className="text-slate-600 text-sm">Entorno sandbox para demostración técnica.</p>
+                <p className="text-slate-600 text-sm">Prueba las funciones del sistema sin contraseña.</p>
               </button>
               <button onClick={handleSelectFull} className="group bg-white/90 backdrop-blur-xl p-8 rounded-3xl border border-white shadow-xl hover:shadow-2xl transition-all text-left">
                 <div className="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mb-6"><ShieldCheck className="w-8 h-8" /></div>
                 <h2 className="text-2xl font-bold text-slate-800 mb-2">Acceso Clínico</h2>
-                <p className="text-slate-600 text-sm">Gestión real de expedientes con seguridad activa.</p>
+                <p className="text-slate-600 text-sm">Uso profesional del expediente médico.</p>
               </button>
            </div>
         </div>
@@ -318,137 +307,113 @@ function App() {
 
       <main className="max-w-[95rem] mx-auto px-6 py-8">
         
-        {/* PANEL DE ANTECEDENTES Y RESUMEN (VISTA 360) */}
-        <div className="mb-8 grid grid-cols-1 lg:grid-cols-12 gap-6 animate-in slide-in-from-top-4 duration-500">
-          
-          {/* Columna Alergias y Patológicos (Izquierda) */}
-          <div className="lg:col-span-8 space-y-6">
-             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <div className="px-5 py-3 border-b border-slate-100 bg-slate-50 flex items-center gap-2">
-                  <ShieldAlert className="w-4 h-4 text-red-500" />
-                  <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest">Antecedentes Médicos y Alergias</h3>
-                </div>
-                <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-6">
-                   {/* Alergias con Alerta Visual */}
-                   <div className={`p-4 rounded-2xl border-2 ${activePatient.history.pathological.allergies ? 'bg-red-50 border-red-100' : 'bg-green-50 border-green-100'}`}>
-                      <h4 className={`text-[10px] font-black uppercase tracking-widest mb-2 flex items-center gap-2 ${activePatient.history.pathological.allergies ? 'text-red-700' : 'text-green-700'}`}>
-                         <AlertCircle className="w-3.5 h-3.5" /> Alergias
-                      </h4>
-                      <p className={`text-sm font-bold ${activePatient.history.pathological.allergies ? 'text-red-800' : 'text-green-800'}`}>
-                        {activePatient.history.pathological.allergies || "Niega alergias medicamentosas o alimentarias."}
-                      </p>
-                   </div>
-                   {/* Patológicos Resumidos */}
-                   <div className="space-y-4">
-                      <div>
-                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-2"><Stethoscope className="w-3 h-3 text-blue-500" /> Patológicos / Quirúrgicos</h4>
-                        <p className="text-xs text-slate-700 italic leading-relaxed">{activePatient.history.pathological.surgeries || "Sin antecedentes patológicos de importancia."}</p>
-                      </div>
-                      <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                        <Pill className="w-4 h-4 text-emerald-500" />
-                        <div>
-                          <span className="text-[9px] font-bold text-slate-400 uppercase block">Medicación Crónica</span>
-                          <p className="text-xs text-slate-800 font-bold">{activePatient.history.pathological.medications || "Ninguna"}</p>
-                        </div>
-                      </div>
-                   </div>
-                </div>
-             </div>
+        {/* RESUMEN DE ANTECEDENTES CRÍTICOS (NUEVO) */}
+        {view === 'detail' && activePatient.id && (
+          <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 animate-in slide-in-from-top-4">
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+               <h3 className="text-xs font-black text-red-600 uppercase tracking-widest flex items-center gap-2 mb-3">
+                 <ShieldAlert className="w-4 h-4" /> Alergias y Patológicos
+               </h3>
+               <div className="space-y-3">
+                  <div className={`p-3 rounded-xl border ${activePatient.history.pathological.allergies ? 'bg-red-50 border-red-100 text-red-800' : 'bg-green-50 border-green-100 text-green-800'}`}>
+                    <span className="text-[10px] font-black uppercase block opacity-70">Alergias</span>
+                    <p className="text-sm font-bold">{activePatient.history.pathological.allergies || "Niega alergias."}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                      <span className="text-[10px] font-black uppercase block text-slate-400">Patológicos / Cirugías</span>
+                      <p className="text-xs text-slate-700 font-medium line-clamp-1">{activePatient.history.pathological.surgeries || "Sin registros."}</p>
+                    </div>
+                    <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                      <span className="text-[10px] font-black uppercase block text-slate-400">Medicación</span>
+                      <p className="text-xs text-slate-700 font-medium line-clamp-1"><Pill className="w-3 h-3 inline mr-1 text-blue-500" /> {activePatient.history.pathological.medications || "Ninguna."}</p>
+                    </div>
+                  </div>
+               </div>
+            </div>
 
-             {/* TABLA DE EVOLUCIÓN CLÍNICA */}
-             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <div className="px-5 py-3 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                   <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2"><ClipboardList className="w-4 h-4 text-blue-500" /> Evolución Clínica (Hitos)</h3>
-                </div>
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+               <h3 className="text-xs font-black text-purple-600 uppercase tracking-widest flex items-center gap-2 mb-3">
+                 <ShieldHalf className="w-4 h-4" /> Riesgos Familiares
+               </h3>
+               <div className="grid grid-cols-3 gap-2 mb-3">
+                  <div className={`flex flex-col items-center justify-center p-2 rounded-xl border ${activePatient.history.family.diabetes ? 'bg-purple-50 border-purple-200 text-purple-700' : 'bg-slate-50 border-slate-100 opacity-40'}`}>
+                    <Activity className="w-4 h-4 mb-1" />
+                    <span className="text-[9px] font-black uppercase">Diabetes</span>
+                  </div>
+                  <div className={`flex flex-col items-center justify-center p-2 rounded-xl border ${activePatient.history.family.hypertension ? 'bg-red-50 border-red-200 text-red-700' : 'bg-slate-50 border-slate-100 opacity-40'}`}>
+                    <HeartPulse className="w-4 h-4 mb-1" />
+                    <span className="text-[9px] font-black uppercase">HTA</span>
+                  </div>
+                  <div className={`flex flex-col items-center justify-center p-2 rounded-xl border ${activePatient.history.family.asthma ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-slate-50 border-slate-100 opacity-40'}`}>
+                    <WindIcon className="w-4 h-4 mb-1" />
+                    <span className="text-[9px] font-black uppercase">Asma</span>
+                  </div>
+               </div>
+               <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
+                 <span className="text-[9px] font-black uppercase block text-slate-400">Otros Familiares</span>
+                 <p className="text-xs text-slate-600 italic line-clamp-1">{activePatient.history.family.other || "Sin otros registros."}</p>
+               </div>
+            </div>
+          </div>
+        )}
+
+        {/* TABLA DE EVOLUCIÓN CLÍNICA */}
+        {view === 'detail' && allPatientConsultations.length > 0 && (
+          <div className="mb-8 animate-in slide-in-from-top-4 duration-500">
+             <div className="flex justify-between items-center mb-3">
+               <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2"><ClipboardList className="w-4 h-4 text-blue-600" /> Historial de Evolución Clínica</h3>
+             </div>
+             <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div className="overflow-x-auto">
                    <table className="w-full text-left">
-                      <thead className="bg-slate-50/50">
+                      <thead className="bg-slate-50 border-b border-slate-200">
                         <tr>
-                          <th className="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Fecha</th>
-                          <th className="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Edad</th>
-                          <th className="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Impresión Clínica (Assessment)</th>
-                          <th className="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Gestión</th>
+                          <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Fecha</th>
+                          <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Edad</th>
+                          <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Diagnóstico(s)</th>
+                          <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Gestión</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
-                        {allPatientConsultations.length > 0 ? (
-                          allPatientConsultations.slice(0, 5).map(c => (
-                            <tr key={c.id} className="hover:bg-blue-50/20 transition-colors">
-                               <td className="px-6 py-4">
-                                  <div className="text-xs font-bold text-slate-800">{new Date(c.date).toLocaleDateString()}</div>
-                                  {c.aiAnalysis && <span className="text-[9px] font-black text-indigo-500 flex items-center gap-0.5"><Sparkles className="w-2.5 h-2.5" /> IA</span>}
-                               </td>
-                               <td className="px-6 py-4"><span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-full">{c.patientAge}</span></td>
-                               <td className="px-6 py-4">
-                                  <div className="flex flex-wrap gap-2">
-                                    {c.soap.diagnoses.map(d => (
-                                      <span key={d.id} className="px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-black rounded border border-blue-100 uppercase tracking-tight">
-                                        {d.assessment || "Control Niño Sano"}
-                                      </span>
-                                    ))}
-                                  </div>
-                               </td>
-                               <td className="px-6 py-4 text-center">
-                                  <button onClick={(e) => handleDeleteConsultation(e, c.id)} className="p-2 text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-full transition-all">
-                                     <Trash2 className="w-4 h-4" />
-                                  </button>
-                               </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr><td colSpan={4} className="px-6 py-8 text-center text-xs text-slate-400 italic font-medium tracking-wide">No hay consultas registradas para este paciente.</td></tr>
-                        )}
+                        {allPatientConsultations.map((c) => (
+                          <tr key={c.id} className="hover:bg-blue-50/30 transition-colors">
+                             <td className="px-4 py-3 align-top">
+                                <div className="text-xs font-bold text-slate-800">{new Date(c.date).toLocaleDateString()}</div>
+                                {c.aiAnalysis && <span className="text-[9px] text-indigo-600 font-bold flex items-center gap-1 mt-1"><Sparkles className="w-2.5 h-2.5" /> IA</span>}
+                             </td>
+                             <td className="px-4 py-3 align-top"><span className="text-[10px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">{c.patientAge}</span></td>
+                             <td className="px-4 py-3 align-top">
+                                <div className="flex flex-wrap gap-1.5">
+                                  {c.soap.diagnoses.map(d => (
+                                    <span key={d.id} className="px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-black rounded border border-blue-100 uppercase tracking-tighter">
+                                      {d.assessment || "Control"}
+                                    </span>
+                                  ))}
+                                </div>
+                             </td>
+                             <td className="px-4 py-3 align-middle text-center">
+                               <button onClick={(e) => handleDeleteConsultation(e, c.id)} className="p-2 text-slate-300 hover:text-red-500 transition-colors">
+                                  <Trash2 className="w-4 h-4" />
+                               </button>
+                             </td>
+                          </tr>
+                        ))}
                       </tbody>
                    </table>
                 </div>
              </div>
           </div>
-
-          {/* Columna Antecedentes Familiares (Derecha) */}
-          <div className="lg:col-span-4 space-y-6">
-             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full">
-                <div className="px-5 py-3 border-b border-slate-100 bg-slate-50 flex items-center gap-2">
-                  <Users className="w-4 h-4 text-purple-500" />
-                  <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest">Riesgos Familiares</h3>
-                </div>
-                <div className="p-6 space-y-6">
-                   <div className="grid grid-cols-3 gap-3">
-                      <div className={`flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all ${activePatient.history.family.diabetes ? 'bg-purple-50 border-purple-200 shadow-sm' : 'bg-slate-50 border-slate-100 opacity-40 grayscale'}`}>
-                         <Activity className={`w-6 h-6 mb-2 ${activePatient.history.family.diabetes ? 'text-purple-600' : 'text-slate-400'}`} />
-                         <span className="text-[9px] font-black uppercase text-center tracking-tighter">Diabetes</span>
-                      </div>
-                      <div className={`flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all ${activePatient.history.family.hypertension ? 'bg-red-50 border-red-200 shadow-sm' : 'bg-slate-50 border-slate-100 opacity-40 grayscale'}`}>
-                         <HeartPulse className={`w-6 h-6 mb-2 ${activePatient.history.family.hypertension ? 'text-red-600' : 'text-slate-400'}`} />
-                         <span className="text-[9px] font-black uppercase text-center tracking-tighter">HTA</span>
-                      </div>
-                      <div className={`flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all ${activePatient.history.family.asthma ? 'bg-blue-50 border-blue-200 shadow-sm' : 'bg-slate-50 border-slate-100 opacity-40 grayscale'}`}>
-                         <Wind className={`w-6 h-6 mb-2 ${activePatient.history.family.asthma ? 'text-blue-600' : 'text-slate-400'}`} />
-                         <span className="text-[9px] font-black uppercase text-center tracking-tighter">Asma / Rin.</span>
-                      </div>
-                   </div>
-                   
-                   <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex-1">
-                      <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-                        <ShieldHalf className="w-3 h-3" /> Otros Familiares Relevantes
-                      </h4>
-                      <p className="text-xs text-slate-600 italic leading-relaxed">
-                        {activePatient.history.family.other || "No se reportan otros antecedentes familiares de importancia clínica."}
-                      </p>
-                   </div>
-                </div>
-             </div>
-          </div>
-        </div>
+        )}
 
         <div className="mt-4 min-h-[60vh]">{renderStep()}</div>
       </main>
 
-      {/* Navegación Inferior */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-lg z-30 pb-safe h-16">
         <div className="max-w-[95rem] mx-auto px-6 h-full flex justify-around items-center">
-           <button onClick={() => setView('list')} className="flex flex-col items-center gap-1 text-slate-400 hover:text-blue-600 transition-all"><Users className="w-5 h-5" /><span className="text-[10px] font-bold">Pacientes</span></button>
+           <button onClick={() => setView('list')} className="flex flex-col items-center gap-1 text-slate-400 hover:text-blue-600 transition-all"><Users className="w-5 h-5" /><span className="text-[10px] font-bold">Inicio</span></button>
            <button onClick={() => setCurrentStep(1)} className={`flex flex-col items-center gap-1 transition-all ${currentStep === 1 ? 'text-blue-600' : 'text-slate-400'}`}><FileText className="w-5 h-5" /><span className="text-[10px] font-bold">Datos</span></button>
-           <button onClick={() => setCurrentStep(2)} className={`flex flex-col items-center gap-1 transition-all ${currentStep === 2 ? 'text-blue-600' : 'text-slate-400'}`}><Baby className="w-5 h-5" /><span className="text-[10px] font-bold">Crecimiento</span></button>
+           <button onClick={() => setCurrentStep(2)} className={`flex flex-col items-center gap-1 transition-all ${currentStep === 2 ? 'text-blue-600' : 'text-slate-400'}`}><Baby className="w-5 h-5" /><span className="text-[10px] font-bold">Hitos</span></button>
            <button onClick={() => setCurrentStep(3)} className={`flex flex-col items-center gap-1 transition-all ${currentStep === 3 ? 'text-blue-600' : 'text-slate-400'}`}><Stethoscope className="w-5 h-5" /><span className="text-[10px] font-bold">Consulta</span></button>
         </div>
       </div>
