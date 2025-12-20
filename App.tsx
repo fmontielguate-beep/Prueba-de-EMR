@@ -9,9 +9,9 @@ import ConsultationHistory from './components/ConsultationHistory';
 import PatientList from './components/PatientList';
 import DosageCalculator from './components/DosageCalculator';
 import PediatricChatbot from './components/PediatricChatbot';
-import CalendarPopup from './components/CalendarPopup'; // Importar nuevo componente
+import CalendarPopup from './components/CalendarPopup';
 import { Patient, SoapNote, Consultation, VitalSigns, LabResult } from './types';
-import { Activity, ArrowLeft, Calculator, History, X, FileText, Users, Baby, Stethoscope, Undo2, Lock, ShieldAlert, KeyRound, FlaskConical, Database, ShieldCheck, LogOut, ClipboardList, Sparkles, Calendar as CalendarIcon } from 'lucide-react';
+import { Activity, ArrowLeft, Calculator, History, X, FileText, Users, Baby, Stethoscope, Undo2, Lock, ShieldAlert, KeyRound, FlaskConical, Database, ShieldCheck, LogOut, ClipboardList, Sparkles, Calendar as CalendarIcon, Unlock } from 'lucide-react';
 
 // Helpers
 const calculateAge = (dobString: string): string => {
@@ -73,7 +73,7 @@ function App() {
   const [view, setView] = useState<'list' | 'detail'>('list');
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [showCalculator, setShowCalculator] = useState(false);
-  const [showCalendar, setShowCalendar] = useState(false); // Estado para el calendario
+  const [showCalendar, setShowCalendar] = useState(false);
   const [showHistoryPanel, setShowHistoryPanel] = useState(false);
   
   // Database
@@ -94,20 +94,20 @@ function App() {
   // --- Handlers ---
 
   const handleSelectDemo = () => {
-    setAccessStep('login');
+    setAccessStep('app'); // Acceso directo para Demo
     setIsDemoMode(true);
+  };
+
+  const handleSelectFull = () => {
+    setAccessStep('login'); // Login para Full
+    setIsDemoMode(false);
     setAuthError(false);
     setPasswordInput('');
   };
 
-  const handleSelectFull = () => {
-    setAccessStep('app');
-    setIsDemoMode(false);
-  };
-
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (passwordInput === 'Helena16') {
+    if (passwordInput === 'Helena 2016') {
       setAccessStep('app');
       setAuthError(false);
     } else {
@@ -347,57 +347,57 @@ function App() {
            </div>
 
            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-              {/* TRIAL CARD */}
+              {/* TRIAL CARD - NOW DIRECT ACCESS */}
               <button 
                 onClick={handleSelectDemo}
                 className="group relative bg-white/60 backdrop-blur-xl p-8 rounded-3xl border border-white shadow-xl hover:shadow-2xl transition-all duration-300 text-left hover:-translate-y-1 overflow-hidden"
               >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-100 rounded-bl-full -mr-16 -mt-16 z-0 transition-transform group-hover:scale-110"></div>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-100 rounded-bl-full -mr-16 -mt-16 z-0 transition-transform group-hover:scale-110"></div>
                 <div className="relative z-10">
-                  <div className="w-14 h-14 bg-yellow-100 text-yellow-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:bg-yellow-500 group-hover:text-white transition-colors">
-                     <FlaskConical className="w-8 h-8" />
+                  <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+                     <Unlock className="w-8 h-8" />
                   </div>
                   <h2 className="text-2xl font-bold text-slate-800 mb-2">Versión de Prueba</h2>
                   <p className="text-slate-600 text-sm leading-relaxed mb-6">
-                    Entorno sandbox para demostración y pruebas. Los datos son temporales y no se guardan permanentemente.
+                    Entorno sandbox para demostración y exploración. Los datos son temporales y no se guardan permanentemente.
                   </p>
-                  <div className="flex items-center gap-2 text-yellow-700 text-xs font-bold uppercase tracking-wider bg-yellow-50 px-3 py-1.5 rounded-lg w-fit">
-                    <Lock className="w-3 h-3" /> Requiere Contraseña
+                  <div className="flex items-center gap-2 text-emerald-700 text-xs font-bold uppercase tracking-wider bg-emerald-50 px-3 py-1.5 rounded-lg w-fit">
+                    <FlaskConical className="w-3 h-3" /> Acceso Abierto
                   </div>
                 </div>
               </button>
 
-              {/* FULL CARD */}
+              {/* FULL CARD - NOW REQUIRES LOGIN */}
               <button 
                 onClick={handleSelectFull}
-                className="group relative bg-white/90 backdrop-blur-xl p-8 rounded-3xl border border-white shadow-xl hover:shadow-2xl transition-all duration-300 text-left hover:-translate-y-1 overflow-hidden ring-1 ring-blue-50 hover:ring-blue-200"
+                className="group relative bg-white/90 backdrop-blur-xl p-8 rounded-3xl border border-white shadow-xl hover:shadow-2xl transition-all duration-300 text-left hover:-translate-y-1 overflow-hidden ring-1 ring-indigo-50 hover:ring-indigo-200"
               >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-full -mr-16 -mt-16 z-0 transition-transform group-hover:scale-110"></div>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-100 rounded-bl-full -mr-16 -mt-16 z-0 transition-transform group-hover:scale-110"></div>
                 <div className="relative z-10">
-                  <div className="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                  <div className="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:bg-indigo-600 group-hover:text-white transition-colors">
                      <ShieldCheck className="w-8 h-8" />
                   </div>
                   <h2 className="text-2xl font-bold text-slate-800 mb-2">Versión Completa</h2>
                   <p className="text-slate-600 text-sm leading-relaxed mb-6">
-                    Acceso al sistema de producción. Gestión de expedientes persistentes y control total de funcionalidades.
+                    Gestión profesional de expedientes médicos. Requiere autenticación de seguridad clínica para proteger la privacidad del paciente.
                   </p>
-                  <div className="flex items-center gap-2 text-blue-700 text-xs font-bold uppercase tracking-wider bg-blue-50 px-3 py-1.5 rounded-lg w-fit">
-                    <Database className="w-3 h-3" /> Acceso Directo
+                  <div className="flex items-center gap-2 text-indigo-700 text-xs font-bold uppercase tracking-wider bg-indigo-50 px-3 py-1.5 rounded-lg w-fit">
+                    <Lock className="w-3 h-3" /> Requiere Contraseña
                   </div>
                 </div>
               </button>
            </div>
            
-           <p className="text-center text-slate-400 text-xs mt-12">v2.0.1 • Seleccione el entorno de trabajo</p>
+           <p className="text-center text-slate-400 text-xs mt-12">v2.1.0 • Seleccione el entorno de trabajo</p>
         </div>
       </div>
     );
   }
 
-  // --- ENTRY: LOGIN SCREEN (DEMO) ---
+  // --- ENTRY: LOGIN SCREEN (FULL VERSION) ---
   if (accessStep === 'login') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 via-orange-50 to-rose-50 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-slate-50 to-blue-50 p-4">
         <div className="bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl border border-white/50 w-full max-w-md animate-in zoom-in-95 duration-500">
           <div className="text-center mb-8">
             <button 
@@ -406,14 +406,14 @@ function App() {
             >
               <ArrowLeft className="w-6 h-6" />
             </button>
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-yellow-100 text-yellow-600 mb-4 shadow-inner">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 text-indigo-600 mb-4 shadow-inner">
               <Lock className="w-8 h-8" />
             </div>
-            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Acceso Prueba</h1>
-            <p className="text-slate-500 text-sm mt-1 mb-2">Ingrese la clave de autorización</p>
-            <div className="inline-flex items-center gap-2 bg-yellow-50 text-yellow-700 px-3 py-1.5 rounded-lg border border-yellow-200 text-xs font-semibold">
+            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Acceso Profesional</h1>
+            <p className="text-slate-500 text-sm mt-1 mb-2">Ingrese la clave de seguridad clínica</p>
+            <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg border border-indigo-200 text-xs font-semibold">
                <ShieldAlert className="w-3 h-3" />
-               Modo Sandbox (Sin persistencia)
+               Entorno Seguro (Persistencia Activa)
             </div>
           </div>
 
@@ -421,7 +421,7 @@ function App() {
             <div className="space-y-2">
               <label className="text-sm font-bold text-slate-600 uppercase tracking-wide ml-1">Contraseña</label>
               <div className="relative group">
-                <KeyRound className="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 group-focus-within:text-yellow-500 transition-colors" />
+                <KeyRound className="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 group-focus-within:text-indigo-500 transition-colors" />
                 <input 
                   type="password" 
                   value={passwordInput}
@@ -429,7 +429,7 @@ function App() {
                   className={`w-full pl-10 pr-4 py-3 rounded-xl border outline-none transition-all shadow-sm ${
                     authError 
                     ? 'border-red-300 focus:ring-2 focus:ring-red-200 bg-red-50/50' 
-                    : 'border-slate-200 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 bg-white'
+                    : 'border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 bg-white'
                   }`}
                   placeholder="Ingrese contraseña..."
                   autoFocus
@@ -444,9 +444,9 @@ function App() {
 
             <button 
               type="submit"
-              className="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-yellow-200 hover:shadow-yellow-300 transform hover:-translate-y-0.5 transition-all"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transform hover:-translate-y-0.5 transition-all"
             >
-              Iniciar Prueba
+              Acceder al Sistema
             </button>
           </form>
         </div>
