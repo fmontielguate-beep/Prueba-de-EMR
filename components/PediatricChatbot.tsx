@@ -1,7 +1,6 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI } from "@google/genai";
-import { MessageSquare, Send, X, Bot, Sparkles, User, Loader2, AlertCircle } from 'lucide-react';
+import { MessageSquare, Send, X, Bot, User, Loader2, AlertCircle } from 'lucide-react';
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
