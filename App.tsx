@@ -11,7 +11,7 @@ import DosageCalculator from './components/DosageCalculator';
 import PediatricChatbot from './components/PediatricChatbot';
 import GrowthHistory from './components/GrowthHistory';
 import { Patient, SoapNote, Consultation, VitalSigns, LabResult } from './types';
-import { Activity, ArrowLeft, History, X, FileText, Users, Baby, Stethoscope, ShieldAlert, Unlock, ShieldCheck, LogOut, ClipboardList, Sparkles, TrendingUp, Trash2, Pill, HeartPulse, ShieldHalf, ChevronRight, Info } from 'lucide-react';
+import { Activity, ArrowLeft, History, X, FileText, Users, Baby, Stethoscope, ShieldAlert, Unlock, ShieldCheck, LogOut, Sparkles, TrendingUp, ShieldHalf, ChevronRight, Info } from 'lucide-react';
 
 // Helpers
 const calculateAge = (dobString: string): string => {
@@ -29,10 +29,6 @@ const calculateAge = (dobString: string): string => {
 
 const generateId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
 
-const WindIcon = ({ className }: { className?: string }) => (
-  <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>
-);
-
 const emptyPatient: Patient = {
   id: '', firstName: '', lastName: '', gender: 'male', dob: '', address: '', phone: '', email: '', nit: '',
   father: { name: '', age: '', profession: '' },
@@ -45,7 +41,7 @@ const emptyPatient: Patient = {
   vaccines: {}, otherVaccines: [], milestones: {},
 };
 
-const VERSION = "v2.4.0-pro";
+const VERSION = "v2.5.0-pro";
 
 function App() {
   const [accessStep, setAccessStep] = useState<'selection' | 'login' | 'app'>('selection');
@@ -146,7 +142,6 @@ function App() {
 
   if (accessStep === 'selection') return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-[#f8fafc] via-[#e0f2fe] to-[#fef2f2] p-6 relative overflow-hidden">
-      {/* Decorative Blobs */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-200/30 blur-[120px] rounded-full" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-rose-200/30 blur-[120px] rounded-full" />
 
@@ -164,7 +159,6 @@ function App() {
          </div>
 
          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-            {/* OPCIÓN DEMO */}
             <button 
               onClick={() => setAccessStep('app')} 
               className="group relative bg-white/70 backdrop-blur-2xl p-10 rounded-[3rem] border border-white shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] hover:shadow-emerald-200/50 transition-all hover:scale-[1.03] text-left active:scale-[0.98]"
@@ -186,7 +180,6 @@ function App() {
               </div>
             </button>
 
-            {/* OPCIÓN CLÍNICA */}
             <button 
               onClick={() => { setAccessStep('login'); setAuthError(false); setPasswordInput(''); }} 
               className="group relative bg-slate-900 p-10 rounded-[3rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] hover:shadow-indigo-900/40 transition-all hover:scale-[1.03] text-left overflow-hidden active:scale-[0.98]"
@@ -210,7 +203,6 @@ function App() {
             </button>
          </div>
 
-         {/* VERSION TAG */}
          <div className="flex flex-col items-center gap-2 animate-in fade-in slide-in-from-bottom-2 duration-1000 delay-500">
             <div className="flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur border border-white/80 rounded-2xl shadow-sm">
                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Versión de Sistema</span>
@@ -254,7 +246,6 @@ function App() {
               />
               {authError && (
                 <div className="flex items-center justify-center gap-1.5 text-red-600 mt-2 animate-in fade-in slide-in-from-top-2">
-                   <Info className="w-3.5 h-3.5" />
                    <span className="text-[10px] font-black uppercase tracking-widest">Contraseña Incorrecta</span>
                 </div>
               )}

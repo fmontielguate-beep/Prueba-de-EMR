@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Consultation, Patient } from '../types';
-import { ChevronDown, ChevronUp, History, ClipboardList, Pill, BookOpen, Microscope, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, ClipboardList, Pill, BookOpen, Microscope, Trash2 } from 'lucide-react';
 
 interface Props {
   consultations: Consultation[];

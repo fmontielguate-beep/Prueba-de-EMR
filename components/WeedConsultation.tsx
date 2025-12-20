@@ -1,9 +1,8 @@
 
 import React, { useState } from 'react';
 import { SoapNote, Patient, VitalSigns, LabResult, ClinicalDiagnosis } from '../types';
-import { Stethoscope, Sparkles, Save, Activity, Calculator, Plus, Trash2, Pill, BookOpen, ClipboardList, Microscope } from 'lucide-react';
+import { Stethoscope, Sparkles, Save, Activity, Plus, Trash2, Pill, BookOpen, ClipboardList, Microscope } from 'lucide-react';
 import { analyzeSoapNote } from '../services/geminiService';
-import { calculateAgeInMonths, analyzeGrowth } from '../utils/growthStandards';
 
 interface Props {
   patient: Patient;

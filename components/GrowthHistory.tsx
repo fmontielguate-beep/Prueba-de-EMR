@@ -14,7 +14,6 @@ interface Props {
 const GrowthHistory: React.FC<Props> = ({ patient, consultations, isOpen, onClose }) => {
   if (!isOpen) return null;
 
-  // Sort consultations by date ascending to show growth over time
   const history = [...consultations].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   const calculateBMI = (weight: string, height: string) => {
@@ -28,7 +27,6 @@ const GrowthHistory: React.FC<Props> = ({ patient, consultations, isOpen, onClos
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-6xl h-[85vh] flex flex-col overflow-hidden border border-slate-200 animate-in zoom-in-95 duration-300">
         
-        {/* Header */}
         <div className="bg-slate-50 px-8 py-6 border-b border-slate-200 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <div className="bg-blue-600 p-3 rounded-2xl text-white shadow-lg shadow-blue-100">
@@ -44,7 +42,6 @@ const GrowthHistory: React.FC<Props> = ({ patient, consultations, isOpen, onClos
           </button>
         </div>
 
-        {/* Content */}
         <div className="flex-1 overflow-auto p-8">
           {history.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-4">
@@ -73,10 +70,9 @@ const GrowthHistory: React.FC<Props> = ({ patient, consultations, isOpen, onClos
                   </thead>
                   <tbody className="bg-white divide-y divide-slate-100">
                     {history.map((c) => {
-                      const ageMonths = calculateAgeInMonths(patient.dob); // Note: Idealmente usar edad al momento de la consulta
                       const analysis = analyzeGrowth(
                         patient.gender,
-                        calculateAgeInMonths(patient.dob), // En una app real, aquí calcularíamos meses entre DOB y c.date
+                        calculateAgeInMonths(patient.dob),
                         parseFloat(c.vitalSigns.weightKg),
                         parseFloat(c.vitalSigns.heightCm),
                         parseFloat(c.vitalSigns.headCircumferenceCm || '0')
@@ -138,7 +134,6 @@ const GrowthHistory: React.FC<Props> = ({ patient, consultations, isOpen, onClos
           )}
         </div>
 
-        {/* Footer */}
         <div className="bg-slate-50 px-8 py-4 border-t border-slate-200 flex justify-between items-center">
           <p className="text-[10px] text-slate-400 font-medium italic">
             * Referencias basadas en Patrones de Crecimiento Infantil de la OMS (Z-Scores).
