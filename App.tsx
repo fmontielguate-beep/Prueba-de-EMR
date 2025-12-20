@@ -9,8 +9,9 @@ import ConsultationHistory from './components/ConsultationHistory';
 import PatientList from './components/PatientList';
 import DosageCalculator from './components/DosageCalculator';
 import PediatricChatbot from './components/PediatricChatbot';
+import CalendarPopup from './components/CalendarPopup'; // Importar nuevo componente
 import { Patient, SoapNote, Consultation, VitalSigns, LabResult } from './types';
-import { Activity, ArrowLeft, Calculator, History, X, FileText, Users, Baby, Stethoscope, Undo2, Lock, ShieldAlert, KeyRound, FlaskConical, Database, ShieldCheck, LogOut, ClipboardList, Sparkles } from 'lucide-react';
+import { Activity, ArrowLeft, Calculator, History, X, FileText, Users, Baby, Stethoscope, Undo2, Lock, ShieldAlert, KeyRound, FlaskConical, Database, ShieldCheck, LogOut, ClipboardList, Sparkles, Calendar as CalendarIcon } from 'lucide-react';
 
 // Helpers
 const calculateAge = (dobString: string): string => {
@@ -72,6 +73,7 @@ function App() {
   const [view, setView] = useState<'list' | 'detail'>('list');
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [showCalculator, setShowCalculator] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false); // Estado para el calendario
   const [showHistoryPanel, setShowHistoryPanel] = useState(false);
   
   // Database
@@ -484,6 +486,10 @@ function App() {
           isOpen={showCalculator} 
           onClose={() => setShowCalculator(false)} 
         />
+        <CalendarPopup 
+          isOpen={showCalendar} 
+          onClose={() => setShowCalendar(false)} 
+        />
         
         {undoAlert && (
           <div className="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-lg shadow-2xl z-50 flex items-center gap-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -503,12 +509,22 @@ function App() {
           </div>
         )}
 
-        <button
-          onClick={() => setShowCalculator(true)}
-          className="fixed bottom-6 right-6 h-14 w-14 bg-indigo-600 text-white rounded-full shadow-xl flex items-center justify-center z-40 hover:scale-110 transition-transform"
-        >
-          <Calculator className="w-6 h-6" />
-        </button>
+        <div className="fixed bottom-6 right-6 flex flex-col gap-4 z-40">
+          <button
+            onClick={() => setShowCalendar(true)}
+            className="h-14 w-14 bg-indigo-500 text-white rounded-full shadow-xl flex items-center justify-center hover:scale-110 transition-transform"
+            title="Calendario"
+          >
+            <CalendarIcon className="w-6 h-6" />
+          </button>
+          <button
+            onClick={() => setShowCalculator(true)}
+            className="h-14 w-14 bg-indigo-600 text-white rounded-full shadow-xl flex items-center justify-center hover:scale-110 transition-transform"
+            title="Calculadora"
+          >
+            <Calculator className="w-6 h-6" />
+          </button>
+        </div>
 
         <PediatricChatbot />
       </>
@@ -528,6 +544,11 @@ function App() {
         isOpen={showCalculator} 
         onClose={() => setShowCalculator(false)} 
         defaultWeight={activePatient.history.perinatal.birthWeight ? activePatient.history.perinatal.birthWeight.replace(/[^0-9.]/g, '') : ''}
+      />
+
+      <CalendarPopup 
+        isOpen={showCalendar} 
+        onClose={() => setShowCalendar(false)} 
       />
 
       {/* Header */}
@@ -552,6 +573,14 @@ function App() {
             </div>
             
             <div className="flex items-center gap-4">
+              <button
+                onClick={() => setShowCalendar(true)}
+                className="hidden md:flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+              >
+                <CalendarIcon className="w-4 h-4" />
+                Calendario
+              </button>
+
               <button
                 onClick={() => setShowCalculator(true)}
                 className="hidden md:flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
@@ -695,12 +724,22 @@ function App() {
           </div>
       )}
 
-      <button
-        onClick={() => setShowCalculator(true)}
-        className="md:hidden fixed bottom-24 right-6 h-12 w-12 bg-indigo-600 text-white rounded-full shadow-xl flex items-center justify-center z-40 hover:scale-110 transition-transform"
-      >
-        <Calculator className="w-5 h-5" />
-      </button>
+      <div className="md:hidden fixed bottom-24 right-6 flex flex-col gap-3 z-40">
+        <button
+          onClick={() => setShowCalendar(true)}
+          className="h-12 w-12 bg-indigo-500 text-white rounded-full shadow-xl flex items-center justify-center hover:scale-110 transition-transform"
+          title="Calendario"
+        >
+          <CalendarIcon className="w-5 h-5" />
+        </button>
+        <button
+          onClick={() => setShowCalculator(true)}
+          className="h-12 w-12 bg-indigo-600 text-white rounded-full shadow-xl flex items-center justify-center hover:scale-110 transition-transform"
+          title="Calculadora"
+        >
+          <Calculator className="w-5 h-5" />
+        </button>
+      </div>
 
       <PediatricChatbot />
     </div>
