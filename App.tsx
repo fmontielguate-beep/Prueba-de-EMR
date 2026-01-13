@@ -43,7 +43,8 @@ const emptyPatient: Patient = {
   vaccines: {}, otherVaccines: [], milestones: {},
 };
 
-const VERSION = "v2.6.1-pro";
+// CONSTANTE DE VERSIÓN ACTUALIZADA
+const VERSION = "v2.6.2-pro";
 
 function App() {
   const [accessStep, setAccessStep] = useState<'selection' | 'login' | 'app'>('selection');
@@ -180,7 +181,7 @@ function App() {
     };
     setConsultations(prev => [newConsultation, ...prev]);
     saveActivePatientToList(false);
-    alert("Consulta registrada exitosamente. Los datos anteriores se conservan en el historial.");
+    alert("Consulta registrada exitosamente en v2.6.2. Los datos anteriores se conservan en el historial.");
     setView('list');
   };
 
@@ -192,7 +193,7 @@ function App() {
     switch (currentStep) {
       case 1: return (
         <div className="flex flex-col lg:flex-row gap-8 pb-32 max-w-[95rem] mx-auto animate-in fade-in duration-500">
-          {/* Panel Lateral: Historial Rápido para Diagnósticos anteriores */}
+          {/* Panel Lateral: Historial Rápido para Diagnósticos anteriores con POPUP clicable */}
           <div className="w-full lg:w-96 shrink-0 space-y-6">
             <div className="bg-white p-7 rounded-[2.5rem] border border-slate-200 shadow-sm sticky top-24">
               <div className="flex justify-between items-center mb-6 border-b pb-4">
@@ -208,12 +209,12 @@ function App() {
                     <div 
                       key={c.id} 
                       onClick={() => setSelectedConsultation(c)}
-                      className="p-4 bg-slate-50 rounded-2xl border border-slate-100 group relative hover:border-blue-200 transition-all hover:shadow-md hover:bg-white cursor-pointer"
+                      className="p-4 bg-slate-50 rounded-2xl border border-slate-100 group relative hover:border-blue-200 transition-all hover:shadow-md hover:bg-white cursor-pointer active:scale-95"
                     >
                       <button 
                         onClick={(e) => handleDeleteConsultation(e, c.id)}
                         className="absolute top-3 right-3 p-1.5 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity bg-white border border-slate-100 rounded-lg shadow-sm z-10"
-                        title="Borrar consulta duplicada"
+                        title="Borrar consulta"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -247,21 +248,22 @@ function App() {
           </div>
 
           <div className="flex-1 space-y-8">
-            {/* Banner de Reconsulta Prominente */}
+            {/* Banner de Reconsulta Prominente mejorado para v2.6.2 */}
             {allPatientConsultations.length > 0 && (
-              <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-8 rounded-[3rem] shadow-2xl shadow-blue-200 flex flex-col md:flex-row items-center justify-between gap-6 text-white animate-in zoom-in-95 border-4 border-white">
-                 <div className="flex items-center gap-6">
-                    <div className="bg-white/10 p-5 rounded-[2.5rem] backdrop-blur-xl border border-white/20">
+              <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 p-8 rounded-[3rem] shadow-2xl shadow-blue-200 flex flex-col md:flex-row items-center justify-between gap-6 text-white animate-in zoom-in-95 border-4 border-white relative overflow-hidden group">
+                 <div className="absolute top-0 right-0 p-20 -mr-10 -mt-10 bg-white/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-1000" />
+                 <div className="flex items-center gap-6 relative z-10">
+                    <div className="bg-white/10 p-5 rounded-[2.5rem] backdrop-blur-xl border border-white/20 shadow-inner">
                        <RefreshCw className="w-10 h-10 animate-spin-slow" />
                     </div>
                     <div>
                       <h2 className="text-3xl font-black tracking-tight leading-none mb-2">Reconsulta Médica</h2>
-                      <p className="text-blue-100 text-sm font-medium opacity-90 italic">¿Vuelve el paciente hoy? Agilice el proceso.</p>
+                      <p className="text-blue-100 text-sm font-medium opacity-90 italic">Paciente recurrente. ¿Desea agilizar la atención?</p>
                     </div>
                  </div>
                  <button 
                     onClick={handleStartReconsultation}
-                    className="bg-white text-blue-700 hover:bg-blue-50 px-12 py-5 rounded-[2rem] font-black text-sm uppercase tracking-[0.1em] shadow-xl hover:shadow-2xl transition-all active:scale-95 flex items-center gap-4 group"
+                    className="bg-white text-blue-700 hover:bg-blue-50 px-12 py-5 rounded-[2rem] font-black text-sm uppercase tracking-[0.1em] shadow-xl hover:shadow-2xl transition-all active:scale-95 flex items-center gap-4 group relative z-10"
                  >
                     Nueva Visita Hoy <ChevronRight className="group-hover:translate-x-1 transition-transform" />
                  </button>
@@ -393,7 +395,8 @@ function App() {
 
   if (view === 'list') return (
     <div className="relative">
-      <div className="absolute top-4 right-4 z-40">
+      <div className="absolute top-4 right-4 z-40 flex items-center gap-3">
+        <div className="px-3 py-1.5 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-full text-[10px] font-black text-slate-400 uppercase tracking-widest animate-pulse">Build {VERSION}</div>
         <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-white rounded-full text-xs font-bold text-slate-600 hover:text-red-600 border border-slate-200 shadow-sm transition-all active:scale-95">
           <LogOut className="w-4 h-4" /> Salir de Sesión
         </button>
@@ -425,6 +428,9 @@ function App() {
       <header className="bg-white/80 backdrop-blur-md border-b h-16 flex items-center px-6 sticky top-0 z-40 shadow-sm">
         <button onClick={() => setView('list')} className="mr-4 p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-blue-600"><ArrowLeft /></button>
         <span className="font-black text-xl tracking-tight hidden sm:inline">PediaCare<span className="text-blue-600">EMR</span></span>
+        <div className="ml-3 hidden md:block">
+           <span className="bg-slate-100 text-slate-400 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest">{VERSION}</span>
+        </div>
         
         <div className="ml-auto flex items-center gap-3">
            <button onClick={() => saveActivePatientToList()} className="flex items-center gap-2 px-6 py-2.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 hover:text-white transition-all shadow-sm">
