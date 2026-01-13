@@ -12,7 +12,7 @@ import PediatricChatbot from './components/PediatricChatbot';
 import GrowthHistory from './components/GrowthHistory';
 import CalendarPopup from './components/CalendarPopup';
 import { Patient, SoapNote, Consultation, VitalSigns, LabResult } from './types';
-import { ArrowLeft, History, X, FileText, Users, Baby, Stethoscope, ShieldAlert, Unlock, ShieldCheck, LogOut, Sparkles, TrendingUp, ShieldHalf, ChevronRight, Calculator, Calendar as CalendarIcon, Save, ChevronLeft, ClipboardList, Pill } from 'lucide-react';
+import { ArrowLeft, History, X, FileText, Users, Baby, Stethoscope, ShieldAlert, Unlock, ShieldCheck, LogOut, Sparkles, TrendingUp, ShieldHalf, ChevronRight, Calculator, Calendar as CalendarIcon, Save, ChevronLeft, ClipboardList, Pill, Trash2 } from 'lucide-react';
 
 // Helpers
 const calculateAge = (dobString: string): string => {
@@ -42,7 +42,7 @@ const emptyPatient: Patient = {
   vaccines: {}, otherVaccines: [], milestones: {},
 };
 
-const VERSION = "v2.5.7-pro";
+const VERSION = "v2.5.8-pro";
 
 function App() {
   const [accessStep, setAccessStep] = useState<'selection' | 'login' | 'app'>('selection');
@@ -133,6 +133,13 @@ function App() {
     return true;
   };
 
+  const handleDeleteConsultation = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    if (window.confirm("¿Confirma que desea eliminar permanentemente este registro de consulta? Esta acción no se puede deshacer.")) {
+      setConsultations(prev => prev.filter(c => c.id !== id));
+    }
+  };
+
   const handleNextStep = () => {
     if (saveActivePatientToList(false)) {
       setCurrentStep(prev => Math.min(prev + 1, 3));
@@ -152,7 +159,7 @@ function App() {
     };
     setConsultations(prev => [newConsultation, ...prev]);
     saveActivePatientToList(false);
-    alert("Consulta guardada exitosamente en el historial.");
+    alert("Consulta guardada exitosamente en el historial clínico.");
     setView('list');
   };
 
@@ -172,11 +179,18 @@ function App() {
               </h3>
               {allPatientConsultations.length > 0 ? (
                 <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
-                  {allPatientConsultations.slice(0, 5).map((c, i) => (
-                    <div key={c.id} className="p-3 bg-slate-50 rounded-2xl border border-slate-100 hover:border-blue-200 transition-all group">
+                  {allPatientConsultations.slice(0, 10).map((c, i) => (
+                    <div key={c.id} className="p-3 bg-slate-50 rounded-2xl border border-slate-100 hover:border-blue-200 transition-all group relative">
+                      <button 
+                        onClick={(e) => handleDeleteConsultation(e, c.id)}
+                        className="absolute top-2 right-2 p-1.5 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity bg-white rounded-lg shadow-sm"
+                        title="Eliminar esta consulta"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-[9px] font-black text-slate-400">{new Date(c.date).toLocaleDateString()}</span>
-                        <span className="text-[8px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-md font-bold uppercase">Consulta {allPatientConsultations.length - i}</span>
+                        <span className="text-[8px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-md font-bold uppercase mr-6">C. {allPatientConsultations.length - i}</span>
                       </div>
                       <div className="space-y-2">
                         {c.soap.diagnoses.map(d => (
@@ -188,13 +202,13 @@ function App() {
                       </div>
                     </div>
                   ))}
-                  {allPatientConsultations.length > 5 && (
+                  {allPatientConsultations.length > 10 && (
                     <button onClick={() => setShowHistoryPanel(true)} className="w-full py-2 text-[10px] font-black text-blue-600 hover:underline uppercase tracking-widest text-center">Ver todos los registros</button>
                   )}
                 </div>
               ) : (
                 <div className="py-10 text-center">
-                  <p className="text-xs text-slate-400 italic">No hay consultas previas registradas para este paciente.</p>
+                  <p className="text-xs text-slate-400 italic">No hay consultas previas registradas.</p>
                 </div>
               )}
             </div>
@@ -418,7 +432,7 @@ function App() {
                 <button onClick={() => setShowHistoryPanel(false)} className="p-2 hover:bg-slate-200 rounded-full transition-colors"><X className="w-6 h-6" /></button>
              </div>
              <div className="flex-1 overflow-y-auto p-6 bg-slate-50/50">
-                <ConsultationHistory consultations={allPatientConsultations} patient={activePatient} />
+                <ConsultationHistory consultations={allPatientConsultations} patient={activePatient} onDelete={handleDeleteConsultation} />
              </div>
           </div>
         </div>
