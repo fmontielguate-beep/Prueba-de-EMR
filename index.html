@@ -1,12 +1,11 @@
-
 <!DOCTYPE html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#eff6ff" />
-    <meta name="description" content="PediaCare EMR v2.6.2 - Sistema de Expediente Médico Pediátrico" />
-    <title>PediaCare EMR v2.6.2</title>
+    <meta name="description" content="PediaCare EMR v2.6.5-pro - Sistema de Expediente Médico Pediátrico" />
+    <title>PediaCare EMR v2.6.5-pro</title>
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3063/3063176.png">
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3063/3063176.png">
@@ -33,6 +32,13 @@
       }
       .custom-scrollbar::-webkit-scrollbar-thumb:hover {
         background: #94a3b8;
+      }
+      @media print {
+        .no-print { display: none !important; }
+        .print-only { display: block !important; }
+        body { background: white !important; }
+        .modal-container { position: static !important; width: 100% !important; height: auto !important; padding: 0 !important; margin: 0 !important; border: none !important; shadow: none !important; }
+        .printable-content { padding: 20px !important; }
       }
     </style>
   <script type="importmap">

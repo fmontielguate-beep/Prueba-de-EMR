@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Consultation, Patient } from '../types';
-import { ChevronRight, ClipboardList, Pill, Trash2, Eye } from 'lucide-react';
+import { ChevronRight, ClipboardList, Trash2, Eye } from 'lucide-react';
 
 interface Props {
   consultations: Consultation[];
