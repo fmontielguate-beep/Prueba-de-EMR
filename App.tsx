@@ -12,7 +12,7 @@ import PediatricChatbot from './components/PediatricChatbot';
 import GrowthHistory from './components/GrowthHistory';
 import CalendarPopup from './components/CalendarPopup';
 import { Patient, SoapNote, Consultation, VitalSigns, LabResult } from './types';
-import { ArrowLeft, History, X, FileText, Users, Baby, Stethoscope, ShieldAlert, Unlock, ShieldCheck, LogOut, Sparkles, TrendingUp, ShieldHalf, ChevronRight, Calculator, Calendar as CalendarIcon, Save, ChevronLeft, ClipboardList, Pill, Trash2, RefreshCw, AlertCircle } from 'lucide-react';
+import { ArrowLeft, History, X, FileText, Users, Baby, Stethoscope, ShieldAlert, Unlock, ShieldCheck, LogOut, Sparkles, TrendingUp, ShieldHalf, ChevronRight, Calculator, Calendar as CalendarIcon, Save, ChevronLeft, ClipboardList, Pill, Trash2, RefreshCw } from 'lucide-react';
 
 // Helpers
 const calculateAge = (dobString: string): string => {
@@ -42,7 +42,7 @@ const emptyPatient: Patient = {
   vaccines: {}, otherVaccines: [], milestones: {},
 };
 
-const VERSION = "v2.5.9-pro";
+const VERSION = "v2.6.0-pro";
 
 function App() {
   const [accessStep, setAccessStep] = useState<'selection' | 'login' | 'app'>('selection');
@@ -135,18 +135,18 @@ function App() {
 
   const handleDeleteConsultation = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    if (window.confirm("¿Confirma que desea eliminar este registro de consulta? Esta acción es definitiva.")) {
+    if (window.confirm("¿Confirma que desea eliminar este registro de consulta? Esta acción no se puede deshacer y borrará permanentemente el diagnóstico y tratamiento seleccionado.")) {
       setConsultations(prev => prev.filter(c => c.id !== id));
     }
   };
 
   const handleStartReconsultation = () => {
-    const confirmSame = window.confirm("¿La información de la ficha (datos generales) y el esquema de vacunas se mantienen sin cambios?");
+    const confirmSame = window.confirm("¿Los datos generales (Ficha) y el esquema de vacunas del paciente se mantienen sin cambios?\n\n- Pulse 'Aceptar' para ir directo a la nueva consulta (SOAP).\n- Pulse 'Cancelar' si necesita realizar cambios en la ficha o vacunas.");
     if (confirmSame) {
-      // Salto directo a SOAP
+      // Salto directo a la consulta nueva (SOAP)
       setCurrentStep(3);
     } else {
-      // Se queda en Ficha para editar
+      // Se queda en Ficha para permitir edición
       setCurrentStep(1);
     }
     window.scrollTo(0,0);
@@ -166,12 +166,18 @@ function App() {
 
   const handleSaveConsultation = (note: SoapNote, vitals: VitalSigns, labs: LabResult[], aiAnalysis?: string) => {
     const newConsultation: Consultation = {
-      id: generateId(), patientId: activePatient.id, date: new Date().toISOString(),
-      patientAge: calculateAge(activePatient.dob), soap: note, vitalSigns: vitals, labResults: labs, aiAnalysis
+      id: generateId(), 
+      patientId: activePatient.id, 
+      date: new Date().toISOString(),
+      patientAge: calculateAge(activePatient.dob), 
+      soap: note, 
+      vitalSigns: vitals, 
+      labResults: labs, 
+      aiAnalysis
     };
     setConsultations(prev => [newConsultation, ...prev]);
     saveActivePatientToList(false);
-    alert("Nueva consulta guardada exitosamente.");
+    alert("Consulta registrada exitosamente. Los datos anteriores se conservan en el historial.");
     setView('list');
   };
 
@@ -183,78 +189,84 @@ function App() {
     switch (currentStep) {
       case 1: return (
         <div className="flex flex-col lg:flex-row gap-8 pb-32 max-w-[95rem] mx-auto animate-in fade-in duration-500">
-          {/* Panel Lateral: Historial Rápido de Diagnósticos */}
+          {/* Panel Lateral: Historial Rápido para Diagnósticos anteriores */}
           <div className="w-full lg:w-96 shrink-0 space-y-6">
-            <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm sticky top-24">
-              <div className="flex justify-between items-center mb-6">
+            <div className="bg-white p-7 rounded-[2.5rem] border border-slate-200 shadow-sm sticky top-24">
+              <div className="flex justify-between items-center mb-6 border-b pb-4">
                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                   <History className="w-4 h-4 text-blue-500" /> Historial de Tratamientos
+                   <History className="w-4 h-4 text-blue-500" /> Historial de Evolución
                  </h3>
-                 <span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded text-[10px] font-bold">{allPatientConsultations.length} total</span>
+                 <span className="bg-blue-50 text-blue-600 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase">{allPatientConsultations.length} Visitas</span>
               </div>
 
               {allPatientConsultations.length > 0 ? (
-                <div className="space-y-4 max-h-[65vh] overflow-y-auto pr-3 custom-scrollbar">
+                <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-3 custom-scrollbar">
                   {allPatientConsultations.slice(0, 10).map((c, i) => (
-                    <div key={c.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 group relative hover:border-blue-200 transition-all">
+                    <div key={c.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 group relative hover:border-blue-200 transition-all hover:shadow-md hover:bg-white">
                       <button 
                         onClick={(e) => handleDeleteConsultation(e, c.id)}
-                        className="absolute top-3 right-3 p-1.5 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity bg-white rounded-lg shadow-sm"
-                        title="Eliminar consulta duplicada"
+                        className="absolute top-3 right-3 p-1.5 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity bg-white border border-slate-100 rounded-lg shadow-sm"
+                        title="Borrar consulta duplicada"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                       <div className="flex justify-between items-center mb-3">
-                        <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md uppercase tracking-tighter">Consulta {allPatientConsultations.length - i}</span>
-                        <span className="text-[10px] font-bold text-slate-400 mr-8">{new Date(c.date).toLocaleDateString()}</span>
+                        <span className="text-[9px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md uppercase">Visita {allPatientConsultations.length - i}</span>
+                        <span className="text-[9px] font-bold text-slate-400 mr-8">{new Date(c.date).toLocaleDateString()}</span>
                       </div>
                       <div className="space-y-3">
                         {c.soap.diagnoses.map(d => (
-                          <div key={d.id} className="text-[11px] leading-snug border-l-2 border-slate-200 pl-3">
-                            <p className="font-black text-slate-800 uppercase flex items-center gap-1.5"><ClipboardList className="w-3 h-3 text-emerald-500" /> {d.assessment || 'Control'}</p>
-                            <p className="text-slate-500 mt-1 italic"><Pill className="inline w-3 h-3 text-blue-400" /> {d.treatment || 'Sin tto.'}</p>
+                          <div key={d.id} className="text-[11px] leading-snug pl-3 border-l-2 border-blue-100">
+                            <p className="font-black text-slate-800 uppercase flex items-center gap-1.5"><ClipboardList className="w-3 h-3 text-blue-400" /> {d.assessment || 'Control de Niño Sano'}</p>
+                            <p className="text-slate-500 mt-1 italic line-clamp-2"><Pill className="inline w-3 h-3 text-slate-300" /> {d.treatment || 'Sin tto. farmacológico'}</p>
                           </div>
                         ))}
                       </div>
                     </div>
                   ))}
+                  {allPatientConsultations.length > 10 && (
+                    <button onClick={() => setShowHistoryPanel(true)} className="w-full py-3 text-[10px] font-black text-blue-600 hover:underline uppercase tracking-widest text-center bg-slate-50 rounded-xl border border-dashed border-blue-200">Ver todo el historial completo</button>
+                  )}
                 </div>
               ) : (
-                <div className="py-16 text-center">
-                  <div className="bg-slate-50 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <History className="text-slate-200 w-6 h-6" />
+                <div className="py-20 text-center opacity-40">
+                  <div className="bg-slate-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <History className="text-slate-400 w-8 h-8" />
                   </div>
-                  <p className="text-xs text-slate-400 font-medium italic">No hay registros previos para este paciente.</p>
+                  <p className="text-xs text-slate-500 font-black uppercase tracking-widest">Sin antecedentes</p>
                 </div>
               )}
             </div>
           </div>
 
           <div className="flex-1 space-y-8">
-            <div className="bg-blue-600 p-8 rounded-[3rem] shadow-xl shadow-blue-100 flex flex-col md:flex-row items-center justify-between gap-6 text-white animate-in zoom-in-95">
-               <div className="flex items-center gap-5">
-                  <div className="bg-white/20 p-4 rounded-[2rem] backdrop-blur-md">
-                     <RefreshCw className="w-8 h-8" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-black tracking-tight">¿Paciente en Reconsulta?</h2>
-                    <p className="text-blue-100 text-sm font-medium">Inicie una nueva atención clínica manteniendo o editando los datos actuales.</p>
-                  </div>
-               </div>
-               <button 
-                  onClick={handleStartReconsultation}
-                  className="bg-white text-blue-600 hover:bg-blue-50 px-10 py-5 rounded-[2rem] font-black text-sm uppercase tracking-widest shadow-lg shadow-blue-900/20 transition-all active:scale-95 flex items-center gap-3"
-               >
-                  Iniciar Nueva Consulta <ChevronRight />
-               </button>
-            </div>
+            {/* Banner de Reconsulta Prominente */}
+            {allPatientConsultations.length > 0 && (
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-8 rounded-[3rem] shadow-2xl shadow-blue-200 flex flex-col md:flex-row items-center justify-between gap-6 text-white animate-in zoom-in-95 border-4 border-white">
+                 <div className="flex items-center gap-6">
+                    <div className="bg-white/10 p-5 rounded-[2.5rem] backdrop-blur-xl border border-white/20">
+                       <RefreshCw className="w-10 h-10 animate-spin-slow" />
+                    </div>
+                    <div>
+                      <h2 className="text-3xl font-black tracking-tight leading-none mb-2">Reconsulta Médica</h2>
+                      <p className="text-blue-100 text-sm font-medium opacity-90 italic">¿Vuelve el paciente hoy? Agilice el proceso.</p>
+                    </div>
+                 </div>
+                 <button 
+                    onClick={handleStartReconsultation}
+                    className="bg-white text-blue-700 hover:bg-blue-50 px-12 py-5 rounded-[2rem] font-black text-sm uppercase tracking-[0.1em] shadow-xl hover:shadow-2xl transition-all active:scale-95 flex items-center gap-4 group"
+                 >
+                    Nueva Visita Hoy <ChevronRight className="group-hover:translate-x-1 transition-transform" />
+                 </button>
+              </div>
+            )}
 
             <PatientForm data={activePatient} onChange={setActivePatient} />
             <MedicalHistoryForm data={activePatient} onChange={setActivePatient} />
             
             <div className="flex justify-center pt-8">
-              <button onClick={handleNextStep} className="group bg-blue-600 hover:bg-blue-700 text-white px-12 py-5 rounded-[2rem] font-black shadow-xl shadow-blue-100 flex items-center gap-3 transition-all active:scale-95 text-sm uppercase tracking-widest">
-                Guardar Cambios y Ir a Vacunas <ChevronRight className="group-hover:translate-x-1 transition-transform" />
+              <button onClick={handleNextStep} className="group bg-blue-600 hover:bg-blue-700 text-white px-14 py-6 rounded-[2.5rem] font-black shadow-2xl shadow-blue-100 flex items-center gap-4 transition-all active:scale-95 text-sm uppercase tracking-widest">
+                Guardar Ficha e ir a Vacunas <ChevronRight className="group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
           </div>
@@ -266,28 +278,28 @@ function App() {
             <VaccineSchedule patient={activePatient} onChange={setActivePatient} />
             <MilestoneTracker patient={activePatient} onChange={setActivePatient} />
           </div>
-          <div className="flex justify-center gap-4 pt-8">
-            <button onClick={handlePrevStep} className="bg-slate-100 hover:bg-slate-200 text-slate-600 px-8 py-5 rounded-[2rem] font-black flex items-center gap-3 transition-all active:scale-95 uppercase text-xs tracking-widest">
+          <div className="flex justify-center gap-4 pt-10">
+            <button onClick={handlePrevStep} className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 px-10 py-5 rounded-[2rem] font-black flex items-center gap-3 transition-all active:scale-95 uppercase text-xs tracking-widest shadow-sm">
               <ChevronLeft /> Regresar a Ficha
             </button>
-            <button onClick={handleNextStep} className="group bg-blue-600 hover:bg-blue-700 text-white px-12 py-5 rounded-[2rem] font-black shadow-xl shadow-blue-100 flex items-center gap-3 transition-all active:scale-95 text-sm uppercase tracking-widest">
-              Guardar y Continuar a SOAP <ChevronRight className="group-hover:translate-x-1 transition-transform" />
+            <button onClick={handleNextStep} className="group bg-blue-600 hover:bg-blue-700 text-white px-14 py-5 rounded-[2rem] font-black shadow-2xl shadow-blue-100 flex items-center gap-4 transition-all active:scale-95 text-sm uppercase tracking-widest">
+              Guardar e ir a SOAP <ChevronRight className="group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
         </div>
       );
       case 3: return (
         <div className="pb-32 max-w-[95rem] mx-auto relative animate-in fade-in duration-500">
-          <div className="flex justify-between items-center mb-8">
-             <button onClick={handlePrevStep} className="flex items-center gap-2 text-slate-400 font-black text-xs uppercase tracking-[0.2em] hover:text-blue-600 transition-all group">
-               <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" /> Regresar a Vacunas
+          <div className="flex justify-between items-center mb-8 bg-white/50 p-4 rounded-3xl backdrop-blur-sm border border-white">
+             <button onClick={handlePrevStep} className="flex items-center gap-3 text-slate-400 font-black text-[10px] uppercase tracking-[0.2em] hover:text-blue-600 transition-all group">
+               <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform border rounded-full" /> Regresar a Vacunas
              </button>
-             <div className="flex gap-3">
-               <button onClick={() => setShowGrowthHistory(true)} className="flex items-center gap-3 bg-blue-50 border border-blue-200 text-blue-700 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-sm hover:bg-blue-100 transition-all">
+             <div className="flex gap-4">
+               <button onClick={() => setShowGrowthHistory(true)} className="flex items-center gap-3 bg-blue-50 border border-blue-200 text-blue-700 px-6 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-sm hover:bg-blue-100 transition-all">
                  <TrendingUp className="w-4 h-4" /> Antropometría Histórica
                </button>
-               <button onClick={() => setShowHistoryPanel(true)} className="flex items-center gap-3 bg-white border border-slate-200 text-slate-700 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-sm hover:bg-slate-50 transition-all">
-                 <History className="w-4 h-4" /> Historial Full ({allPatientConsultations.length})
+               <button onClick={() => setShowHistoryPanel(true)} className="flex items-center gap-3 bg-white border border-slate-200 text-slate-700 px-6 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-sm hover:bg-slate-50 transition-all">
+                 <History className="w-4 h-4" /> Evolución Full ({allPatientConsultations.length})
                </button>
              </div>
           </div>
@@ -387,7 +399,7 @@ function App() {
   return (
     <div className="min-h-screen font-sans pb-20 bg-slate-50/30">
       <div id="save-toast" className="fixed top-20 right-6 z-[100] bg-emerald-600 text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl flex items-center gap-2 animate-in slide-in-from-right-4 duration-300 hidden">
-        <ShieldCheck className="w-4 h-4" /> Registro Actualizado
+        <ShieldCheck className="w-4 h-4" /> Registro Actualizado ({VERSION})
       </div>
 
       <DosageCalculator isOpen={showCalculator} onClose={() => setShowCalculator(false)} />
