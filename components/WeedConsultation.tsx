@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { SoapNote, Patient, VitalSigns, LabResult, ClinicalDiagnosis } from '../types';
-import { Stethoscope, Sparkles, Save, Activity, Plus, Trash2, Pill, BookOpen, ClipboardList, Microscope, Scale, Ruler, Brain, HeartPulse, Wind, TrendingUp } from 'lucide-react';
+import { Stethoscope, Sparkles, Save, Activity, Plus, Trash2, Pill, BookOpen, ClipboardList, Microscope, Scale, Ruler, Brain, HeartPulse, Wind, TrendingUp, Search } from 'lucide-react';
 import { analyzeSoapNote } from '../services/geminiService';
 import { calculateAgeInMonths, analyzeGrowth, analyzeBloodPressure } from '../utils/growthStandards';
 
@@ -63,6 +63,14 @@ const WeedConsultation: React.FC<Props> = ({ patient, onSave }) => {
       ...prev,
       diagnoses: [...prev.diagnoses, { id: generateId(), assessment: '', treatment: '', educationalPlan: '', labRequests: '' }]
     }));
+  };
+
+  const searchScholar = (diagnosis: string) => {
+    if (!diagnosis) return;
+    const ageMonths = calculateAgeInMonths(patient.dob);
+    const ageRange = ageMonths < 12 ? "infant" : ageMonths < 60 ? "toddler" : "pediatric";
+    const query = `${diagnosis} ${ageRange} management guidelines pediatric protocol`;
+    window.open(`https://scholar.google.com/scholar?q=${encodeURIComponent(query)}`, '_blank');
   };
 
   const handleAIAnalysis = async () => {
@@ -138,12 +146,21 @@ const WeedConsultation: React.FC<Props> = ({ patient, onSave }) => {
 
           {note.diagnoses.map((diag, index) => (
             <div key={diag.id} className="bg-white p-8 rounded-[2.5rem] border-2 border-emerald-50 shadow-sm relative animate-in slide-in-from-left-4 duration-500">
-               {note.diagnoses.length > 1 && (
-                 <button onClick={() => setNote({...note, diagnoses: note.diagnoses.filter(d => d.id !== diag.id)})} className="absolute top-6 right-6 text-slate-300 hover:text-red-500 p-2 transition-colors"><Trash2 className="w-5 h-5" /></button>
-               )}
+               <div className="absolute top-6 right-6 flex items-center gap-2">
+                 <button 
+                   onClick={() => searchScholar(diag.assessment)} 
+                   className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl text-[10px] font-black uppercase transition-all border border-blue-100 shadow-sm"
+                   title="Buscar Bibliografía en Google Scholar"
+                 >
+                   <Search className="w-3.5 h-3.5" /> Bibliografía Scholar
+                 </button>
+                 {note.diagnoses.length > 1 && (
+                   <button onClick={() => setNote({...note, diagnoses: note.diagnoses.filter(d => d.id !== diag.id)})} className="text-slate-300 hover:text-red-500 p-2 transition-colors"><Trash2 className="w-5 h-5" /></button>
+                 )}
+               </div>
                <div className="flex items-center gap-4 mb-6">
                   <span className="bg-emerald-600 text-white w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm">{index+1}</span>
-                  <input type="text" value={diag.assessment} onChange={(e) => handleDiagnosisChange(diag.id, 'assessment', e.target.value)} placeholder="Diagnóstico..." className="flex-1 border-b-2 border-slate-100 focus:border-emerald-500 font-black text-lg uppercase outline-none py-1 bg-transparent transition-all" />
+                  <input type="text" value={diag.assessment} onChange={(e) => handleDiagnosisChange(diag.id, 'assessment', e.target.value)} placeholder="Diagnóstico..." className="flex-1 border-b-2 border-slate-100 focus:border-emerald-500 font-black text-lg uppercase outline-none py-1 bg-transparent transition-all pr-40" />
                </div>
                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">

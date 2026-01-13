@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PatientForm from './components/PatientForm';
 import MedicalHistoryForm from './components/MedicalHistory';
 import VaccineSchedule from './components/VaccineSchedule';
@@ -12,7 +12,7 @@ import PediatricChatbot from './components/PediatricChatbot';
 import GrowthHistory from './components/GrowthHistory';
 import CalendarPopup from './components/CalendarPopup';
 import { Patient, SoapNote, Consultation, VitalSigns, LabResult } from './types';
-import { ArrowLeft, History, X, FileText, Users, Baby, Stethoscope, ShieldAlert, Unlock, ShieldCheck, LogOut, Sparkles, TrendingUp, ShieldHalf, ChevronRight, Calculator, Calendar as CalendarIcon } from 'lucide-react';
+import { ArrowLeft, History, X, FileText, Users, Baby, Stethoscope, ShieldAlert, Unlock, ShieldCheck, LogOut, Sparkles, TrendingUp, ShieldHalf, ChevronRight, Calculator, Calendar as CalendarIcon, Save, ChevronLeft } from 'lucide-react';
 
 // Helpers
 const calculateAge = (dobString: string): string => {
@@ -42,7 +42,7 @@ const emptyPatient: Patient = {
   vaccines: {}, otherVaccines: [], milestones: {},
 };
 
-const VERSION = "v2.5.4-pro";
+const VERSION = "v2.5.6-pro";
 
 function App() {
   const [accessStep, setAccessStep] = useState<'selection' | 'login' | 'app'>('selection');
@@ -54,9 +54,28 @@ function App() {
   const [showCalendar, setShowCalendar] = useState(false);
   const [showGrowthHistory, setShowGrowthHistory] = useState(false);
   const [showHistoryPanel, setShowHistoryPanel] = useState(false);
-  const [patients, setPatients] = useState<Patient[]>([]);
-  const [consultations, setConsultations] = useState<Consultation[]>([]);
+  
+  // Persistencia de datos
+  const [patients, setPatients] = useState<Patient[]>(() => {
+    const saved = localStorage.getItem('pediacare_patients');
+    return saved ? JSON.parse(saved) : [];
+  });
+  
+  const [consultations, setConsultations] = useState<Consultation[]>(() => {
+    const saved = localStorage.getItem('pediacare_consultations');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [activePatient, setActivePatient] = useState<Patient>(emptyPatient);
+
+  // Guardar en localStorage cada vez que cambien los datos globales
+  useEffect(() => {
+    localStorage.setItem('pediacare_patients', JSON.stringify(patients));
+  }, [patients]);
+
+  useEffect(() => {
+    localStorage.setItem('pediacare_consultations', JSON.stringify(consultations));
+  }, [consultations]);
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,7 +102,42 @@ function App() {
 
   const handleSelectPatient = (id: string) => {
     const p = patients.find(pat => pat.id === id);
-    if (p) { setActivePatient(p); setCurrentStep(3); setView('detail'); }
+    if (p) { 
+      setActivePatient(p); 
+      setCurrentStep(1); // Empezar siempre por la ficha al seleccionar
+      setView('detail'); 
+    }
+  };
+
+  // Función crítica: Sincronizar el paciente activo con la lista global
+  const saveActivePatientToList = (showToast = true) => {
+    if (!activePatient.firstName || !activePatient.lastName) {
+      alert("Por favor ingrese al menos nombre y apellido para guardar.");
+      return false;
+    }
+
+    setPatients(prev => {
+      const exists = prev.find(p => p.id === activePatient.id);
+      if (exists) {
+        return prev.map(p => p.id === activePatient.id ? activePatient : p);
+      }
+      return [activePatient, ...prev];
+    });
+
+    if (showToast) alert("Información del expediente guardada correctamente.");
+    return true;
+  };
+
+  const handleNextStep = () => {
+    if (saveActivePatientToList(false)) {
+      setCurrentStep(prev => Math.min(prev + 1, 3));
+      window.scrollTo(0, 0);
+    }
+  };
+
+  const handlePrevStep = () => {
+    setCurrentStep(prev => Math.max(prev - 1, 1));
+    window.scrollTo(0, 0);
   };
 
   const handleDeleteConsultation = (e: React.MouseEvent, id: string) => {
@@ -99,8 +153,10 @@ function App() {
       patientAge: calculateAge(activePatient.dob), soap: note, vitalSigns: vitals, labResults: labs, aiAnalysis
     };
     setConsultations(prev => [newConsultation, ...prev]);
+    saveActivePatientToList(false); // Asegurar que los datos del paciente también se guarden
     alert("Consulta guardada exitosamente.");
     setShowHistoryPanel(false);
+    setView('list');
   };
 
   const allPatientConsultations = consultations
@@ -109,17 +165,47 @@ function App() {
 
   const renderStep = () => {
     switch (currentStep) {
-      case 1: return <div className="space-y-8 pb-20 max-w-5xl mx-auto"><PatientForm data={activePatient} onChange={setActivePatient} /><MedicalHistoryForm data={activePatient} onChange={setActivePatient} /></div>;
-      case 2: return <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 pb-20 max-w-[95rem] mx-auto"><VaccineSchedule patient={activePatient} onChange={setActivePatient} /><MilestoneTracker patient={activePatient} onChange={setActivePatient} /></div>;
+      case 1: return (
+        <div className="space-y-8 pb-32 max-w-5xl mx-auto">
+          <PatientForm data={activePatient} onChange={setActivePatient} />
+          <MedicalHistoryForm data={activePatient} onChange={setActivePatient} />
+          <div className="flex justify-center pt-8">
+            <button onClick={handleNextStep} className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-2xl font-black shadow-xl shadow-blue-100 flex items-center gap-2 transition-all active:scale-95 text-sm uppercase tracking-widest">
+              Guardar y Continuar a Vacunas <ChevronRight />
+            </button>
+          </div>
+        </div>
+      );
+      case 2: return (
+        <div className="space-y-6 pb-32 max-w-[95rem] mx-auto">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <VaccineSchedule patient={activePatient} onChange={setActivePatient} />
+            <MilestoneTracker patient={activePatient} onChange={setActivePatient} />
+          </div>
+          <div className="flex justify-center gap-4 pt-8">
+            <button onClick={handlePrevStep} className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-8 py-4 rounded-2xl font-black flex items-center gap-2 transition-all">
+              <ChevronLeft /> Regresar a Ficha
+            </button>
+            <button onClick={handleNextStep} className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-2xl font-black shadow-xl shadow-blue-100 flex items-center gap-2 transition-all">
+              Guardar y Continuar a SOAP <ChevronRight />
+            </button>
+          </div>
+        </div>
+      );
       case 3: return (
-        <div className="pb-20 max-w-[95rem] mx-auto relative">
-          <div className="flex justify-end gap-3 mb-4">
-             <button onClick={() => setShowGrowthHistory(true)} className="flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-blue-100 transition-all">
-               <TrendingUp className="w-4 h-4" /> Antropometría Histórica
+        <div className="pb-32 max-w-[95rem] mx-auto relative">
+          <div className="flex justify-between items-center mb-6">
+             <button onClick={handlePrevStep} className="flex items-center gap-2 text-slate-500 font-bold hover:text-blue-600 transition-colors">
+               <ChevronLeft className="w-5 h-5" /> Regresar a Vacunas
              </button>
-             <button onClick={() => setShowHistoryPanel(true)} className="flex items-center gap-2 bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium shadow-sm hover:bg-slate-50 transition-all">
-               <History className="w-4 h-4" /> Historial Completo ({allPatientConsultations.length})
-             </button>
+             <div className="flex gap-3">
+               <button onClick={() => setShowGrowthHistory(true)} className="flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-blue-100 transition-all">
+                 <TrendingUp className="w-4 h-4" /> Antropometría Histórica
+               </button>
+               <button onClick={() => setShowHistoryPanel(true)} className="flex items-center gap-2 bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium shadow-sm hover:bg-slate-50 transition-all">
+                 <History className="w-4 h-4" /> Historial Completo ({allPatientConsultations.length})
+               </button>
+             </div>
           </div>
           <WeedConsultation patient={activePatient} onSave={handleSaveConsultation} />
           {showHistoryPanel && (
@@ -295,11 +381,15 @@ function App() {
       <CalendarPopup isOpen={showCalendar} onClose={() => setShowCalendar(false)} />
       <GrowthHistory isOpen={showGrowthHistory} onClose={() => setShowGrowthHistory(false)} patient={activePatient} consultations={allPatientConsultations} />
       
-      <header className="bg-white/80 backdrop-blur-md border-b h-16 flex items-center px-6 sticky top-0 z-40">
+      <header className="bg-white/80 backdrop-blur-md border-b h-16 flex items-center px-6 sticky top-0 z-40 shadow-sm">
         <button onClick={() => setView('list')} className="mr-4 p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-blue-600"><ArrowLeft /></button>
-        <span className="font-black text-xl tracking-tight">PediaCare<span className="text-blue-600">EMR</span></span>
+        <span className="font-black text-xl tracking-tight hidden sm:inline">PediaCare<span className="text-blue-600">EMR</span></span>
         
         <div className="ml-auto flex items-center gap-3">
+           <button onClick={() => saveActivePatientToList()} className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-600 hover:text-white transition-all shadow-sm">
+             <Save className="w-4 h-4" /> Guardar Todo
+           </button>
+           <div className="h-8 w-[1px] bg-slate-200 mx-1 hidden sm:block" />
            <button onClick={() => setShowCalculator(true)} className="p-2.5 bg-slate-50 rounded-xl text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all shadow-sm" title="Calculadora de Dosis">
              <Calculator className="w-5 h-5"/>
            </button>
@@ -312,7 +402,7 @@ function App() {
              <p className="text-[10px] text-blue-600 font-black uppercase tracking-widest">{calculateAge(activePatient.dob)}</p>
            </div>
            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center font-black shadow-lg shadow-blue-100 ring-2 ring-white">
-             {activePatient.firstName[0]}
+             {activePatient.firstName ? activePatient.firstName[0] : 'P'}
            </div>
         </div>
       </header>
@@ -353,10 +443,10 @@ function App() {
       </main>
 
       <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t h-16 flex justify-around items-center z-50 shadow-[0_-8px_24px_rgba(0,0,0,0.05)]">
-         <button onClick={() => setView('list')} className="flex flex-col items-center gap-0.5 text-slate-400 hover:text-blue-600 transition-all"><Users className="w-5 h-5" /><span className="text-[9px] font-black uppercase tracking-widest">Inicio</span></button>
-         <button onClick={() => setCurrentStep(1)} className={`flex flex-col items-center gap-0.5 transition-all ${currentStep === 1 ? 'text-blue-600 scale-110' : 'text-slate-400'}`}><FileText className="w-5 h-5" /><span className="text-[9px] font-black uppercase tracking-tighter">Ficha</span></button>
-         <button onClick={() => setCurrentStep(2)} className={`flex flex-col items-center gap-0.5 transition-all ${currentStep === 2 ? 'text-blue-600 scale-110' : 'text-slate-400'}`}><Baby className="w-5 h-5" /><span className="text-[9px] font-black uppercase tracking-tighter">Vacunas</span></button>
-         <button onClick={() => setCurrentStep(3)} className={`flex flex-col items-center gap-0.5 transition-all ${currentStep === 3 ? 'text-blue-600 scale-110' : 'text-slate-400'}`}><Stethoscope className="w-5 h-5" /><span className="text-[9px] font-black uppercase tracking-tighter">SOAP</span></button>
+         <button onClick={() => { saveActivePatientToList(false); setView('list'); }} className="flex flex-col items-center gap-0.5 text-slate-400 hover:text-blue-600 transition-all"><Users className="w-5 h-5" /><span className="text-[9px] font-black uppercase tracking-widest">Inicio</span></button>
+         <button onClick={() => { saveActivePatientToList(false); setCurrentStep(1); }} className={`flex flex-col items-center gap-0.5 transition-all ${currentStep === 1 ? 'text-blue-600 scale-110' : 'text-slate-400'}`}><FileText className="w-5 h-5" /><span className="text-[9px] font-black uppercase tracking-tighter">Ficha</span></button>
+         <button onClick={() => { saveActivePatientToList(false); setCurrentStep(2); }} className={`flex flex-col items-center gap-0.5 transition-all ${currentStep === 2 ? 'text-blue-600 scale-110' : 'text-slate-400'}`}><Baby className="w-5 h-5" /><span className="text-[9px] font-black uppercase tracking-tighter">Vacunas</span></button>
+         <button onClick={() => { saveActivePatientToList(false); setCurrentStep(3); }} className={`flex flex-col items-center gap-0.5 transition-all ${currentStep === 3 ? 'text-blue-600 scale-110' : 'text-slate-400'}`}><Stethoscope className="w-5 h-5" /><span className="text-[9px] font-black uppercase tracking-tighter">SOAP</span></button>
       </div>
       
       <PediatricChatbot />
