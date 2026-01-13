@@ -11,6 +11,7 @@ import DosageCalculator from './components/DosageCalculator';
 import PediatricChatbot from './components/PediatricChatbot';
 import GrowthHistory from './components/GrowthHistory';
 import CalendarPopup from './components/CalendarPopup';
+import ConsultationDetailModal from './components/ConsultationDetailModal';
 import { Patient, SoapNote, Consultation, VitalSigns, LabResult } from './types';
 import { ArrowLeft, History, X, FileText, Users, Baby, Stethoscope, ShieldAlert, Unlock, ShieldCheck, LogOut, Sparkles, TrendingUp, ShieldHalf, ChevronRight, Calculator, Calendar as CalendarIcon, Save, ChevronLeft, ClipboardList, Pill, Trash2, RefreshCw } from 'lucide-react';
 
@@ -42,7 +43,7 @@ const emptyPatient: Patient = {
   vaccines: {}, otherVaccines: [], milestones: {},
 };
 
-const VERSION = "v2.6.0-pro";
+const VERSION = "v2.6.1-pro";
 
 function App() {
   const [accessStep, setAccessStep] = useState<'selection' | 'login' | 'app'>('selection');
@@ -54,6 +55,7 @@ function App() {
   const [showCalendar, setShowCalendar] = useState(false);
   const [showGrowthHistory, setShowGrowthHistory] = useState(false);
   const [showHistoryPanel, setShowHistoryPanel] = useState(false);
+  const [selectedConsultation, setSelectedConsultation] = useState<Consultation | null>(null);
   
   // Persistencia de datos
   const [patients, setPatients] = useState<Patient[]>(() => {
@@ -137,6 +139,7 @@ function App() {
     e.stopPropagation();
     if (window.confirm("¿Confirma que desea eliminar este registro de consulta? Esta acción no se puede deshacer y borrará permanentemente el diagnóstico y tratamiento seleccionado.")) {
       setConsultations(prev => prev.filter(c => c.id !== id));
+      if (selectedConsultation?.id === id) setSelectedConsultation(null);
     }
   };
 
@@ -202,10 +205,14 @@ function App() {
               {allPatientConsultations.length > 0 ? (
                 <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-3 custom-scrollbar">
                   {allPatientConsultations.slice(0, 10).map((c, i) => (
-                    <div key={c.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 group relative hover:border-blue-200 transition-all hover:shadow-md hover:bg-white">
+                    <div 
+                      key={c.id} 
+                      onClick={() => setSelectedConsultation(c)}
+                      className="p-4 bg-slate-50 rounded-2xl border border-slate-100 group relative hover:border-blue-200 transition-all hover:shadow-md hover:bg-white cursor-pointer"
+                    >
                       <button 
                         onClick={(e) => handleDeleteConsultation(e, c.id)}
-                        className="absolute top-3 right-3 p-1.5 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity bg-white border border-slate-100 rounded-lg shadow-sm"
+                        className="absolute top-3 right-3 p-1.5 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity bg-white border border-slate-100 rounded-lg shadow-sm z-10"
                         title="Borrar consulta duplicada"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -406,6 +413,15 @@ function App() {
       <CalendarPopup isOpen={showCalendar} onClose={() => setShowCalendar(false)} />
       <GrowthHistory isOpen={showGrowthHistory} onClose={() => setShowGrowthHistory(false)} patient={activePatient} consultations={allPatientConsultations} />
       
+      {selectedConsultation && (
+        <ConsultationDetailModal 
+          isOpen={!!selectedConsultation} 
+          onClose={() => setSelectedConsultation(null)} 
+          consultation={selectedConsultation} 
+          patient={activePatient} 
+        />
+      )}
+
       <header className="bg-white/80 backdrop-blur-md border-b h-16 flex items-center px-6 sticky top-0 z-40 shadow-sm">
         <button onClick={() => setView('list')} className="mr-4 p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-blue-600"><ArrowLeft /></button>
         <span className="font-black text-xl tracking-tight hidden sm:inline">PediaCare<span className="text-blue-600">EMR</span></span>
@@ -480,7 +496,7 @@ function App() {
                 <button onClick={() => setShowHistoryPanel(false)} className="p-3 hover:bg-slate-200 rounded-full transition-colors text-slate-400"><X className="w-7 h-7" /></button>
              </div>
              <div className="flex-1 overflow-y-auto p-8 bg-slate-50/50">
-                <ConsultationHistory consultations={allPatientConsultations} patient={activePatient} onDelete={handleDeleteConsultation} />
+                <ConsultationHistory consultations={allPatientConsultations} patient={activePatient} onDelete={handleDeleteConsultation} onSelect={(c) => setSelectedConsultation(c)} />
              </div>
           </div>
         </div>
