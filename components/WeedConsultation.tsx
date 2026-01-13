@@ -98,8 +98,8 @@ const WeedConsultation: React.FC<Props> = ({ patient, onSave }) => {
               <VitalInput label="Peso (Kg)" value={vitals.weightKg} onChange={(v) => setVitals({...vitals, weightKg: v})} icon={<Scale className="w-3 h-3"/>} />
               <VitalInput label="Talla (Cm)" value={vitals.heightCm} onChange={(v) => setVitals({...vitals, heightCm: v})} icon={<Ruler className="w-3 h-3"/>} />
               <VitalInput label="C. Cefálica (Cm)" value={vitals.headCircumferenceCm} onChange={(v) => setVitals({...vitals, headCircumferenceCm: v})} icon={<Brain className="w-3 h-3"/>} />
-              <VitalInput label="T° (°C)" value={vitals.temperature} onChange={(v) => setVitals({...vitals, temperature: v})} icon={<Activity className="w-3 h-3"/>} />
-              <VitalInput label="Sat O2 (%)" value={vitals.oxygenSaturation} onChange={(v) => setVitals({...vitals, oxygenSaturation: v})} icon={<Wind className="w-3 h-3"/>} />
+              <VitalInput label="T° (°C)" value={vitals.temperature} onChange={(v) => setVitals({...vitals, temperature: v})} icon={<HeartPulse className="w-3 h-3 text-red-400"/>} />
+              <VitalInput label="Sat O2 (%)" value={vitals.oxygenSaturation} onChange={(v) => setVitals({...vitals, oxygenSaturation: v})} icon={<Wind className="w-3 h-3 text-sky-400"/>} />
               <VitalInput label="F.C. (Lpm)" value={vitals.heartRate} onChange={(v) => setVitals({...vitals, heartRate: v})} icon={<HeartPulse className="w-3 h-3"/>} />
               <VitalInput label="F.R. (Rpm)" value={vitals.respiratoryRate} onChange={(v) => setVitals({...vitals, respiratoryRate: v})} icon={<Wind className="w-3 h-3"/>} />
               <VitalInput label="P.A. (mmHg)" value={vitals.bloodPressure || ''} onChange={(v) => setVitals({...vitals, bloodPressure: v})} placeholder="120/80" icon={<Activity className="w-3 h-3"/>} />
